@@ -1,0 +1,155 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: filter-ratelimit-between-apps
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      app: spring-boot-rest-client
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_OUTBOUND
+        listener:
+          filterChain:
+            filter:
+              name: envoy.http_connection_manager
+              subFilter:
+                name: envoy.router
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.rate_limit
+          config:
+            domain: "test"
+            failure_mode_deny: true
+            rate_limit_service:
+              grpc_service:
+                envoy_grpc:
+                  cluster_name: "patched.rate-limit-svc.tutorial.svc.cluster.local" # WORKAROUND - https://github.com/istio/istio/issues/21841
+                timeout: 0.25s
+    - applyTo: CLUSTER
+      match:
+        cluster:
+          service: rate-limit-svc.tutorial.svc.cluster.local
+      patch:
+        operation: MERGE
+        value:
+          name: "patched.rate-limit-svc.tutorial.svc.cluster.local"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: filter-ratelimit-between-apps-svc
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      app: spring-boot-rest-client
+  configPatches:
+    - applyTo: VIRTUAL_HOST
+      match:
+        context: SIDECAR_OUTBOUND
+        routeConfiguration:
+          vhost:
+            name: "spring-boot-rest-server-svc.tutorial.svc.cluster.local:8080"
+            route:
+              action: ANY
+      patch:
+        operation: MERGE
+        value:
+          rate_limits:
+            - actions:
+                - request_headers:
+                    descriptor_key: custom-rl-header
+                    header_name: custom-rl-header
+          request_headers_to_add:
+            - header:
+                key: "x-ratelimit"
+                value: "spring-boot-rest-server-svc.tutorial.svc.cluster.local"
+#            - actions:
+#                - header_value_match:
+#                    descriptor_value: custom-rl-header
+#                    expect_match: false
+#                    headers:
+#                      - name: ":path"
+#                        exact_match: "/"
+#                      - name: "Authorization"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: filter-ratelimit-ingress
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: GATEWAY
+        listener:
+          filterChain:
+            filter:
+              name: envoy.http_connection_manager
+              subFilter:
+                name: envoy.router
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          config:
+            domain: "test"
+            failure_mode_deny: true
+            rate_limit_service:
+              grpc_service:
+                envoy_grpc:
+                  cluster_name: "patched.rate-limit-svc.tutorial.svc.cluster.local" # WORKAROUND - https://github.com/istio/istio/issues/21841
+                timeout: 0.25s
+          name: envoy.rate_limit
+    - applyTo: CLUSTER
+      match:
+        cluster:
+          service: rate-limit-svc.tutorial.svc.cluster.local
+      patch:
+        operation: MERGE
+        value:
+          name: "patched.rate-limit-svc.tutorial.svc.cluster.local"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: filter-ratelimit-ingress-svc
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: VIRTUAL_HOST
+      match:
+        context: GATEWAY
+        routeConfiguration:
+          vhost:
+            name: "spring-boot-rest-client.example.ru:80"
+            route:
+              action: ANY
+      patch:
+        operation: MERGE
+        value:
+          rate_limits:
+            - actions:
+              - header_value_match:
+                  descriptor_value: quote-by-path
+                  expect_match: true
+                  headers:
+                  - name: ":path"
+                    exact_match: "/ping"
+#              # The next block means that Authorization is not present
+#              - header_value_match:
+#                  descriptor_value: quote-path-auth
+#                  expect_match: false
+#                  headers:
+#                    - name: "Authorization"
+              stage: 0

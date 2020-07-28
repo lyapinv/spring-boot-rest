@@ -1,0 +1,93 @@
+﻿kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rate-limit-server-config
+  namespace: tutorial
+data:
+  LOG_LEVEL: DEBUG
+  REDIS_SOCKET_TYPE: tcp
+  REDIS_URL: 'localhost:6379'
+  RUNTIME_ROOT: /data/ratelimit
+  RUNTIME_SUBDIRECTORY: config
+  USE_STATSD: 'false'
+  #Configuration for rate limit service. It will be mounted as file in service container
+  rate_limit.property: |
+    domain: test
+    descriptors:
+      - key: custom-rl-header
+        value: val1
+        rate_limit:
+          unit: second
+          requests_per_unit: 1
+      - key: header_match
+        value: quote-by-path
+        rate_limit:
+          unit: minute
+          requests_per_unit: 1
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: rate-limit-server
+  namespace: tutorial
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rate-limiter
+  template:
+    metadata:
+      labels:
+        app: rate-limiter
+      annotations:
+        sidecar.istio.io/inject: 'true'
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: rate-limit-server-config
+            items:
+              - key: rate_limit.property
+                path: config.yaml
+            defaultMode: 420
+        - name: redis
+          emptyDir: {}
+      containers:
+        - name: redis
+          image: 'redis:alpine'
+          command:
+            - redis-server
+          #args for disabling persistence in Redis
+          args:
+            - '--save'
+            - '""'
+            - '--appendonly'
+            - 'no'
+        - resources: {}
+          name: rate-limit-server
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: config
+              mountPath: /data/ratelimit/config
+          terminationMessagePolicy: File
+          envFrom:
+            - configMapRef:
+                name: rate-limit-server-config
+          image: evil26r/service_rite_limit
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: rate-limit-svc
+  namespace: tutorial
+spec:
+  ports:
+    - name: grpc-ratelimit # important! Prefix must be named grpc-
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+  selector:
+    app: rate-limiter

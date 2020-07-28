@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: spring-boot-rest-server
+    version: v1
+  name: spring-boot-rest-server
+  namespace: tutorial
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-boot-rest-server
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: spring-boot-rest-server
+        group: tutorial-rest-app
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"                 # service mesh sidecar
+#        sidecar.istio.io/rewriteAppHTTPProbers: "true"  # settings for probe when mTLS enabled
+    spec:
+      containers:
+        - env:
+            - name: JAVA_OPTIONS
+              value: -Xms128m -Xmx128m -Xmn128m
+          name: spring-boot-rest-server
+          image: image-registry.openshift-image-registry.svc:5000/tutorial/spring-boot-rest-server:v11
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "100m"
+              memory: "256Mi"
+          securityContext:
+            privileged: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-boot-rest-server-svc
+  namespace: tutorial
+  labels:
+    app: spring-boot-rest-server
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: spring-boot-rest-server

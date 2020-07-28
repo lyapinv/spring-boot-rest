@@ -1,0 +1,38 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: spring-boot-rest-client-gateway
+  namespace: tutorial
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "spring-boot-rest-client.example.ru"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: spring-boot-rest-client-ingress-vs
+  namespace: tutorial
+spec:
+  hosts:
+    - "spring-boot-rest-client.example.ru"
+  gateways:
+    - spring-boot-rest-client-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /ping
+        - uri:
+            prefix: /cities
+      route:
+        - destination:
+            port:
+              number: 8080
+            host: spring-boot-rest-client-svc.tutorial.svc.cluster.local
+
