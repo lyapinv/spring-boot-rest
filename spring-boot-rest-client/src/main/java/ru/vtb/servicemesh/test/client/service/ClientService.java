@@ -66,7 +66,17 @@ public class ClientService implements ITestService {
     }
 
     @Override
+    public String pingServerRx(Long loopCount) {
+        logger.info(" Call ping serverrx ");
+        return pingRemoteServer(loopCount, "/pingrx");
+    }
+
+    @Override
     public String pingServerLoop(Long loopCount) {
+        return pingRemoteServer(loopCount, "/ping");
+    }
+
+    private String pingRemoteServer(Long loopCount, String uriPath) {
         logger.info("!!! Call ping server loop. loopCount= {}", loopCount);
         executorService = Executors.newFixedThreadPool(loopCount.intValue());
         latch = new CountDownLatch(loopCount.intValue());
@@ -77,7 +87,7 @@ public class ClientService implements ITestService {
                 executorService.execute(new Runnable() {
                     @Override
                     public void run() {
-                        ResponseEntity<String> responseEntity = restTemplate.getForEntity(serverServiceURL + "/ping", String.class);
+                        ResponseEntity<String> responseEntity = restTemplate.getForEntity(serverServiceURL + uriPath, String.class);
                         String response = responseEntity.getBody();
                         logger.info("!!! Thread {} - response from server: {}", Thread.currentThread().getName(), response);
                         latch.countDown();
@@ -86,14 +96,14 @@ public class ClientService implements ITestService {
                 logger.info("!!! Call ping server loop. iteration: {}", i);
                 TimeUnit.MILLISECONDS.sleep(10);
             }
-            latch.await();
+            latch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.error("Exception handled on latch waiting.", e);
         }
 
-        int timeInSec = Math.round((System.currentTimeMillis() - startTime)/1000);
+        double timeInSec = (System.currentTimeMillis() - startTime)/1000;
 
-        logger.info("!!! responses from server received. LoopCount: {}, Avg tps: {}", loopCount, loopCount/timeInSec);
+        logger.info("!!! responses from server received. LoopCount: {}, Avg tps: {}", loopCount, String.format("%.2f", loopCount/timeInSec));
         return "Looped response received. LoopCount=" + loopCount;
     }
 

@@ -14,5 +14,7 @@ public interface ITestService {
 
     String pingServer();
 
+    String pingServerRx(Long loopCount);
+
     String pingServerLoop(Long loopCount);
 }

@@ -31,6 +31,11 @@ public class ClientController {
         return clientService.pingServerLoop(loopCount);
     }
 
+    @RequestMapping("/pingServerLoopRx/{loopCount}")
+    public String pingServerLoopRx(@PathVariable("loopCount") Long loopCount) {
+        return clientService.pingServerRx(loopCount);
+    }
+
     @RequestMapping("/cities")
     public List<City> findCities() {
         return clientService.findAll();

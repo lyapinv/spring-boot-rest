@@ -25,10 +25,10 @@ spec:
       containers:
         - env:
             - name: JAVA_OPTIONS
-              value: -Xms512m -Xmx512m -Xmn512m
+              value: -Xms256m -Xmx256m -Xmn256m
           name: spring-boot-rest-server-1
           image: image-registry.openshift-image-registry.svc:5000/tutorial-os/spring-boot-rest-server:v13
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
               name: http
@@ -36,10 +36,10 @@ spec:
           resources:
             requests:
               cpu: "200m"
-              memory: "512Mi"
+              memory: "256Mi"
             limits:
               cpu: "200m"
-              memory: "512Mi"
+              memory: "256Mi"
           securityContext:
             privileged: false
 ---

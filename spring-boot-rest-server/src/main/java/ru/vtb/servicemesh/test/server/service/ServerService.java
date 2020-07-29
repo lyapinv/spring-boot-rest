@@ -39,7 +39,7 @@ public class ServerService implements ITestService {
 
     @Override
     public String ping() {
-        int sleepSecValue = 10;
+        int sleepSecValue = 25;
         long currentTimeNano = System.nanoTime();
         int iteration = count.addAndGet(1);
         logger.info("{} - server ping/pong request. currentTimeMill: {}. Sleep for {}sec", iteration, currentTimeNano, sleepSecValue);
