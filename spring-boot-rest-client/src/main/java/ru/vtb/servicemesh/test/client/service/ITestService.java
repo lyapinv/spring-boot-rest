@@ -12,7 +12,11 @@ public interface ITestService {
 
     String ping();
 
+    String pingMock();
+
     String pingServer();
 
     String pingServerLoop(Long loopCount);
+
+    String pingServerMockLoop(Long loopCount);
 }

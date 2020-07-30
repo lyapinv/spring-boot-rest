@@ -20,6 +20,11 @@ public class ServerController {
         return serverService.ping();
     }
 
+    @RequestMapping("/pingMock")
+    public String pingMock() {
+        return serverService.pingMock();
+    }
+
     @RequestMapping("/cities")
     public List<City> findCities() {
         return serverService.findAll();

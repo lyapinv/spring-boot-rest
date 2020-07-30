@@ -66,7 +66,25 @@ public class ClientService implements ITestService {
     }
 
     @Override
+    public String pingMock() {
+        logger.info(" Call ping server ");
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(serverServiceURL + "/pingMock", String.class);
+        String response = responseEntity.getBody();
+        logger.info("!!! response from server: {}", response);
+        return response;
+    }
+
+    @Override
+    public String pingServerMockLoop(Long loopCount) {
+        return callSeriviceOingLopped(loopCount, "/pingMock");
+    }
+
+    @Override
     public String pingServerLoop(Long loopCount) {
+        return callSeriviceOingLopped(loopCount, "/ping");
+    }
+
+    private String callSeriviceOingLopped(Long loopCount, String uri) {
         logger.info("!!! Call ping server loop. loopCount= {}", loopCount);
         executorService = Executors.newFixedThreadPool(loopCount.intValue());
         latch = new CountDownLatch(loopCount.intValue());
@@ -77,7 +95,7 @@ public class ClientService implements ITestService {
                 executorService.execute(new Runnable() {
                     @Override
                     public void run() {
-                        ResponseEntity<String> responseEntity = restTemplate.getForEntity(serverServiceURL + "/ping", String.class);
+                        ResponseEntity<String> responseEntity = restTemplate.getForEntity(serverServiceURL + uri, String.class);
                         String response = responseEntity.getBody();
                         logger.info("!!! Thread {} - response from server: {}", Thread.currentThread().getName(), response);
                         latch.countDown();

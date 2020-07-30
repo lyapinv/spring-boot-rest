@@ -20,15 +20,24 @@ public class ClientController {
         return clientService.ping();
     }
 
+    @RequestMapping("/pingMock")
+    public String pingMock() {
+        return clientService.pingMock();
+    }
+
     @RequestMapping("/pingServer")
     public String pingServer() {
         return clientService.pingServer();
     }
 
-
     @RequestMapping("/pingServerLoop/{loopCount}")
     public String pingServerLoop(@PathVariable("loopCount") Long loopCount) {
         return clientService.pingServerLoop(loopCount);
+    }
+
+    @RequestMapping("/pingServerMockLoop/{loopCount}")
+    public String pingServerMockLoop(@PathVariable("loopCount") Long loopCount) {
+        return clientService.pingServerMockLoop(loopCount);
     }
 
     @RequestMapping("/cities")

@@ -11,4 +11,6 @@ public interface ITestService {
     City findById(Long id);
 
     String ping();
+
+    String pingMock();
 }
