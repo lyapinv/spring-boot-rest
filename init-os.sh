@@ -53,6 +53,7 @@ oc new-project $OS_NAMESPACE
 # Deploy Server app
 oc apply -f $SERVER_APPLICATION_PATH/server-deployment-os.yaml -n $OS_NAMESPACE
 
+oc annotate route spring-boot-rest-server-1-svc --overwrite haproxy.router.openshift.io/timeout=60s -n tutorial-os
 
 # openshift run - 200:; 400:;
 # local docker run - 200:7,5; 400:14;
