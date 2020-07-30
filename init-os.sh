@@ -31,6 +31,8 @@ export SERVER_IMAGE=$CRC_REGISTRY/tutorial-os/spring-boot-rest-server:$SERVER_VE
 docker build -t tutorial-os/spring-boot-rest-server:${SERVER_VERSION} spring-boot-rest-server/.
 docker tag tutorial-os/spring-boot-rest-server:${SERVER_VERSION} ${SERVER_IMAGE}
 docker push ${SERVER_IMAGE}
+# Clear all untagged images
+docker rmi $(docker images -f "dangling=true" -q)
 
 #oc delete deployment $OS_NAMESPACE -n $CLIENT_APPLICATION_NAME
 # Wait until all resourses of just deleted project are being deleted - need for success creation new project.
@@ -51,7 +53,11 @@ oc new-project $OS_NAMESPACE
 # Deploy Server app
 oc apply -f $SERVER_APPLICATION_PATH/server-deployment-os.yaml -n $OS_NAMESPACE
 
-# Create OpenShift Router
+
+# openshift run - 200:; 400:;
+# local docker run - 200:7,5; 400:14;
+# docker run -it -p 8081:8081 tutorial-os/spring-boot-rest-server
+
 
 #curl -v -HHost:spring-boot-rest-client.example.ru -Hcustom-rl-header:val1 http://192.168.1.106:31067/pingServer
 #curl -v -HHost:spring-boot-rest-client.example.ru http://192.168.1.106:31067/ping
