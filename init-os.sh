@@ -26,7 +26,7 @@ docker login -u kubeadmin -p $(oc whoami -t) $CRC_REGISTRY
 export CRC_REGISTRY=default-route-openshift-image-registry.apps-crc.testing
 
 # Build Server application and deploy
-export SERVER_VERSION=v13
+export SERVER_VERSION=v13r
 export SERVER_IMAGE=$CRC_REGISTRY/tutorial-os/spring-boot-rest-server:$SERVER_VERSION
 docker build -t tutorial-os/spring-boot-rest-server:${SERVER_VERSION} spring-boot-rest-server/.
 docker tag tutorial-os/spring-boot-rest-server:${SERVER_VERSION} ${SERVER_IMAGE}
@@ -62,6 +62,8 @@ oc annotate route spring-boot-rest-server-1-svc --overwrite haproxy.router.opens
 
 #curl -v -HHost:spring-boot-rest-client.example.ru -Hcustom-rl-header:val1 http://192.168.1.106:31067/pingServer
 #curl -v -HHost:spring-boot-rest-client.example.ru http://192.168.1.106:31067/ping
+#curl -v http://localhost:8082/pingServerLoopRxMock/50
+#curl -v http://localhost:8082/pingServerLoopRxWs/1
 
 #curl -v http://spring-boot-rest-server-1-svc-tutorial-os.apps-crc.testing/ping
 #curl -v http://localhost:8082/pingServerLoop/300

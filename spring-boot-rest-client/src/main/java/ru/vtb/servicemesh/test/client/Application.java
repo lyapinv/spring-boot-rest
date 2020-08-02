@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+import ru.vtb.servicemesh.test.client.metrics.MetricRegistryFactory;
+import ru.vtb.servicemesh.test.client.metrics.SystemOutReporter;
 
 @SpringBootApplication
 public class Application {
@@ -16,5 +18,15 @@ public class Application {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder.build();
+    }
+
+    @Bean
+    public MetricRegistryFactory metricRegistryFactory() {
+        return new MetricRegistryFactory();
+    }
+
+    @Bean
+    public SystemOutReporter systemOutReporter() {
+        return new SystemOutReporter();
     }
 }
