@@ -5,7 +5,5 @@
 
     <logger name="org.springframework.web" level="info"/>
     <logger name="org.apache" level="info"/>
-    <logger name="ru.vtb" level="off"/>
-    <logger name="ru.vtb.servicemesh.test.client.metrics" level="debug"/>
 
 </configuration>

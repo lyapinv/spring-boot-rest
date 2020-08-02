@@ -1,5 +1,7 @@
 package ru.vtb.servicemesh.test.client.service;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +29,15 @@ public class ClientService implements ITestService {
     private CountDownLatch latch;
 
     @Autowired
+    private MetricRegistry metricRegistry;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     @Value("${SERVER_URI}")
     private String serverServiceURL;
+
+    public static final String METRICS_PREFIX = "meter-api.";
 
     @Override
     public List<City> findAll() {
@@ -72,25 +79,42 @@ public class ClientService implements ITestService {
     }
 
     @Override
+    public String pingServerRxMock(Long loopCount) {
+        logger.info(" Call ping serverrx ");
+        return pingRemoteServer(loopCount, "/pingrx_mock");
+    }
+
+    @Override
+    public String pingServerRxWs(Long loopCount) {
+        logger.info(" Call ping serverrx ");
+        return pingRemoteServer(loopCount, "/pingrx_ws");
+    }
+
+    @Override
     public String pingServerLoop(Long loopCount) {
         return pingRemoteServer(loopCount, "/ping");
     }
 
     private String pingRemoteServer(Long loopCount, String uriPath) {
         logger.info("!!! Call ping server loop. loopCount= {}", loopCount);
-        executorService = Executors.newFixedThreadPool(loopCount.intValue());
-        latch = new CountDownLatch(loopCount.intValue());
+        int threadsCount = loopCount.intValue() == -1 ? 300 : loopCount.intValue();
+        executorService = Executors.newFixedThreadPool(threadsCount);
+        latch = new CountDownLatch(loopCount.intValue() == -1 ? Integer.MAX_VALUE : loopCount.intValue());
 
         long startTime = System.currentTimeMillis();
         try {
-            for (int i = 0; i < loopCount; i++) {
+            int callIterations = loopCount.intValue() == -1 ? Integer.MAX_VALUE : loopCount.intValue();
+            for (int i = 0; i < callIterations; i++) {
                 executorService.execute(new Runnable() {
                     @Override
                     public void run() {
+                        Timer.Context context = metricRegistry.timer(METRICS_PREFIX + "pingServerRxMock").time();
+
                         ResponseEntity<String> responseEntity = restTemplate.getForEntity(serverServiceURL + uriPath, String.class);
                         String response = responseEntity.getBody();
                         logger.info("!!! Thread {} - response from server: {}", Thread.currentThread().getName(), response);
                         latch.countDown();
+                        context.stop();
                     }
                 });
                 logger.info("!!! Call ping server loop. iteration: {}", i);
