@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.web.reactive.function.client.WebClient;
+import ru.vtb.servicemesh.test.server.reactive.CustomAutomaticWorkQueueImpl;
 import ru.vtb.test.jaxws.async.client.HelloWorldImplService;
 
 @SpringBootApplication
@@ -34,7 +35,7 @@ public class Application {
 
     @Bean(name = "cxf.default.workqueue")
     public AutomaticWorkQueue cxfQueue() {
-        return new AutomaticWorkQueueImpl(
+        return new CustomAutomaticWorkQueueImpl(
                 1000,
                 0,
                 3,
