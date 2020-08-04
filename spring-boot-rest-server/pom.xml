@@ -59,6 +59,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
+                    <source>11</source>
+                    <target>11</target>
                     <release>11</release>
                 </configuration>
             </plugin>
@@ -74,9 +76,12 @@
                         </goals>
                         <configuration>
                             <bindingDirectory>src/main/resources/META-INF/wsdl</bindingDirectory>
-                            <wsdlUrls>
-                                <wsdlUrl>http://localhost:9999/ws/hello?wsdl</wsdlUrl>
-                            </wsdlUrls>
+<!--                            <wsdlUrls>-->
+<!--                                <wsdlUrl>http://localhost:9999/ws/hello?wsdl</wsdlUrl>-->
+<!--                            </wsdlUrls>-->
+                            <wsdlFiles>
+                                <wsdlFile>${project.basedir}/src/main/resources/META-INF/wsdl/hello-1.wsdl</wsdlFile>
+                            </wsdlFiles>
                             <vmArgs>
                                 <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
                             </vmArgs>
