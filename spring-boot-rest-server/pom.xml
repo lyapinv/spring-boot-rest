@@ -75,12 +75,12 @@
                             <goal>wsimport</goal>
                         </goals>
                         <configuration>
-                            <bindingDirectory>src/main/resources/META-INF/wsdl</bindingDirectory>
+                            <bindingDirectory>src/main/resources/wsdl</bindingDirectory>
 <!--                            <wsdlUrls>-->
 <!--                                <wsdlUrl>http://localhost:9999/ws/hello?wsdl</wsdlUrl>-->
 <!--                            </wsdlUrls>-->
                             <wsdlFiles>
-                                <wsdlFile>${project.basedir}/src/main/resources/META-INF/wsdl/hello-1.wsdl</wsdlFile>
+                                <wsdlFile>${project.basedir}/src/main/resources/wsdl/hello-1.wsdl</wsdlFile>
                             </wsdlFiles>
                             <vmArgs>
                                 <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>

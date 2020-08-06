@@ -17,7 +17,7 @@ public class HelloWorldImpl implements HelloWorld {
     public String getHelloWorldAsString(String name) throws InterruptedException {
         int executionCount = counter.incrementAndGet();
         log.info("Current executionCount: {}", executionCount);
-        TimeUnit.SECONDS.sleep(3);
+        TimeUnit.SECONDS.sleep(10);
         return "Hello World JAX-WS " + name;
     }
 
