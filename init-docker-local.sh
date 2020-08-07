@@ -2,8 +2,11 @@
 
 mvn clean package
 
-export MY_IP=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
+export MY_IP=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -1)
 echo "MY_IP="$MY_IP
+
+export WS_URL="http://127.0.0.1:8083"
+export SERVER_URL="http://127.0.0.1:8081"
 
 export WS_VERSION=v17r
 export WS_PROJECT=spring-boot-jaxws
@@ -21,7 +24,7 @@ export MJO="
 -Dcom.sun.management.jmxremote.authenticate=false
 -Dcom.sun.management.jmxremote.ssl=false
 -Dcom.sun.management.jmxremote.local.only=false "
-WS_CID=$(docker run -d --name ${WS_PROJECT} -p 9999:9999 -p $JMX_PORT:$JMX_PORT -e JAVA_OPTS="$MJO" tutorial-os/${WS_PROJECT}:${WS_VERSION})
+WS_CID=$(docker run -d --name ${WS_PROJECT} -p 9999:9999 -p $JMX_PORT:$JMX_PORT -e JAVA_OPTS="$MJO" -e WS_URL="$WS_URL" tutorial-os/${WS_PROJECT}:${WS_VERSION})
 echo "WebService container started. WS_CID="$WS_CID
 
 export SERVER_VERSION=v17r
@@ -61,12 +64,9 @@ echo "Client container started. CL_CID="$CL_CID
 # Clear all untagged images
 docker rmi $(docker images -f "dangling=true" -q)
 
+echo \n\n\n
 echo "jmx connection path: service:jmx:rmi:///jndi/rmi://$MY_IP:$JMX_PORT/jmxrmi"
 
-#echo "to remove containers run: \n
-#docker rm -f $WS_CID
-#docker rm -f $CL_CID
-#docker rm -f $SRV_CID"
 
 read  -n 1 -p "Press any button to remove all created containers:" mainmenuinput
 docker rm -f $WS_CID

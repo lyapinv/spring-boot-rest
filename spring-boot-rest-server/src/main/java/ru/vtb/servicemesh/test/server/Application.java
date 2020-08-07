@@ -25,7 +25,9 @@ public class Application {
     @Autowired
     private SpringBus bus;
 
-    @Value("${MOCK_URI}")
+//    @Value("${MOCK_URI}")
+//    private String url;
+    @Value("${WS_URI}")
     private String url;
 
     @Bean
@@ -35,6 +37,7 @@ public class Application {
 
     @Bean
     public ru.vtb.test.jaxws.async.client.HelloWorld helloWorldPort() throws MalformedURLException {
+        System.out.println("!!! url: " + url);
         WebServiceClient annotation = HelloWorldImplService.class.getAnnotation(WebServiceClient.class);
         QName qName = new QName(annotation.targetNamespace(), annotation.name());
         URL baseUrl = HelloWorldImplService.class.getResource("/");

@@ -8,4 +8,5 @@ COPY ${JAR_FILE} /application.jar
 # Rest entrypoint
 #EXPOSE 8081
 #ENTRYPOINT [ "/opt/app/entrypoint.sh" ]
+#ENTRYPOINT exec java $JAVA_OPTS $WS_URL -jar /application.jar
 ENTRYPOINT exec java $JAVA_OPTS -jar /application.jar
