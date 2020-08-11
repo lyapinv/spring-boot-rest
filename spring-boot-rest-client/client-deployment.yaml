@@ -40,8 +40,8 @@ spec:
                   name: spring-boot-rest-client-cfg
                   key: server.service.uri
           name: spring-boot-rest-client
-          image: image-registry.openshift-image-registry.svc:5000/tutorial/spring-boot-rest-client:v13r
-          imagePullPolicy: IfNotPresent
+          image: image-registry.openshift-image-registry.svc:5000/tutorial/spring-boot-rest-client:v14
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
               name: http

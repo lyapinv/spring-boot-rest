@@ -26,14 +26,14 @@ docker login -u kubeadmin -p $(oc whoami -t) $CRC_REGISTRY
 export CRC_REGISTRY=default-route-openshift-image-registry.apps-crc.testing
 
 # Build Client application and deploy
-export CLIENT_VERSION=v13
+export CLIENT_VERSION=v14
 export CLIENT_IMAGE=$CRC_REGISTRY/tutorial/spring-boot-rest-client:$CLIENT_VERSION
 docker build -t tutorial/spring-boot-rest-client:${CLIENT_VERSION} spring-boot-rest-client/.
 docker tag tutorial/spring-boot-rest-client:${CLIENT_VERSION} ${CLIENT_IMAGE}
 docker push ${CLIENT_IMAGE}
 
 # Build Server application and deploy
-export SERVER_VERSION=v13
+export SERVER_VERSION=v14
 export SERVER_IMAGE=$CRC_REGISTRY/tutorial/spring-boot-rest-server:$SERVER_VERSION
 docker build -t tutorial/spring-boot-rest-server:${SERVER_VERSION} spring-boot-rest-server/.
 docker tag tutorial/spring-boot-rest-server:${SERVER_VERSION} ${SERVER_IMAGE}

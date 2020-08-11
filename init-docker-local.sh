@@ -68,7 +68,7 @@ echo \n\n\n
 echo "jmx connection path: service:jmx:rmi:///jndi/rmi://$MY_IP:$JMX_PORT/jmxrmi"
 
 
-read  -n 1 -p "Press any button to remove all created containers:" mainmenuinput
+read -n 1 -p "Press any button to remove all created containers:" mainmenuinput
 docker rm -f $WS_CID
 docker rm -f $CL_CID
 docker rm -f $SRV_CID
