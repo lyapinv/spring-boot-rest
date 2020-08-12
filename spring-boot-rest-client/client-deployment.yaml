@@ -40,10 +40,10 @@ spec:
                   name: spring-boot-rest-client-cfg
                   key: server.service.uri
           name: spring-boot-rest-client
-          image: image-registry.openshift-image-registry.svc:5000/tutorial/spring-boot-rest-client:latest
+          image: image-registry.openshift-image-registry.svc:5000/tutorial/spring-boot-rest-client:v1
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
+            - containerPort: 8082
               name: http
               protocol: TCP
           resources:
@@ -67,6 +67,6 @@ spec:
   ports:
     - name: http
       port: 8080
-      targetPort: 8080
+      targetPort: 8082
   selector:
     app: spring-boot-rest-client

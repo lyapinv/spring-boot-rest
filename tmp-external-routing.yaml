@@ -1,0 +1,54 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: spring-boot-rest-server-route
+  namespace: tutorial
+  labels:
+    app: custom-ingressgateway
+spec:
+  host: spring-boot-rest-server-1-svc.apps-crc.testing
+  to:
+    kind: Service
+    name: custom-ingressgateway-svc
+    weight: 100
+  port:
+    targetPort: http2
+  wildcardPolicy: None
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: spring-boot-rest-server-gateway
+  namespace: tutorial
+spec:
+  selector:
+    istio: custom-ingressgateway # custom gateway implementation
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "spring-boot-rest-server.example.ru"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: spring-boot-rest-server-ingress-vs
+  namespace: tutorial
+spec:
+  hosts:
+    - "spring-boot-rest-server.example.ru"
+  gateways:
+    - spring-boot-rest-server-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /ping
+        - uri:
+            prefix: /cities
+      route:
+        - destination:
+            port:
+              number: 8081
+            host: spring-boot-rest-server-svc.tutorial.svc.cluster.local
