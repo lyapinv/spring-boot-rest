@@ -27,7 +27,7 @@ spec:
             - name: JAVA_OPTIONS
               value: -Xms128m -Xmx128m -Xmn128m
           name: spring-boot-rest-server
-          image: image-registry.openshift-image-registry.svc:5000/tutorial/spring-boot-rest-server:v11
+          image: image-registry.openshift-image-registry.svc:5000/tutorial/spring-boot-rest-server:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

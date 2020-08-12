@@ -1,0 +1,1 @@
+docker login -u msa -p 123 nexus
