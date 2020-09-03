@@ -67,6 +67,9 @@ oc apply -f deployment-custom-ingress.yaml -n $OS_NAMESPACE
 # Config routing
 oc apply -f external-routing.yaml -n $OS_NAMESPACE
 
+echo "call from outside cluster with command: curl -v http://spring-boot-rest-server-1-svc.apps-crc.testing/ping"
+
+# while (true); do curl -v http://spring-boot-rest-server-1-svc.apps-crc.testing/ping; done;
 
 ## Ingress config for Client app
 #oc apply -f ingress-cfg.yaml -n $OS_NAMESPACE
@@ -89,3 +92,6 @@ oc apply -f external-routing.yaml -n $OS_NAMESPACE
 #curl -v -HHost:spring-boot-rest-client.example.ru http://192.168.1.106:31067/ping
 
 # curl -v -HHost:spring-boot-rest-server.example.ru http://spring-boot-rest-server-1-svc.apps-crc.testing/ping
+
+oc set
+oc apply -f deployment-custom-ingress.yaml

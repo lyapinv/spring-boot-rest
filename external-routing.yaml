@@ -10,7 +10,6 @@ spec:
   to:
     kind: Service
     name: custom-ingressgateway-svc
-#    name: spring-boot-rest-server-svc
     weight: 100
   port:
     targetPort: http2
@@ -31,7 +30,6 @@ spec:
         protocol: HTTP
       hosts:
         - "spring-boot-rest-server-1-svc.apps-crc.testing"
-        - "spring-boot-rest-server.example.ru"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -41,7 +39,6 @@ metadata:
 spec:
   hosts:
     - "spring-boot-rest-server-1-svc.apps-crc.testing"
-    - "spring-boot-rest-server.example.ru"
   gateways:
     - spring-boot-rest-server-gateway
   http:
