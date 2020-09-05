@@ -86,6 +86,7 @@ oc apply -f $CLIENT_APPLICATION_PATH/client-deployment.yaml -n $OS_NAMESPACE
 oc apply -f $SERVER_APPLICATION_PATH/server-deployment.yaml -n $OS_NAMESPACE2
 
 # Ingress config for Client app
+oc apply -f internal_Ingress.yaml -n $OS_NAMESPACE
 oc apply -f ingress-cfg.yaml -n $OS_NAMESPACE
 export INGRESS_HOST=$(crc ip)
 export INGRESS_PORT=$(oc -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
@@ -96,6 +97,7 @@ echo "Ingress configured. Call WS with the next URI: curl -v -HHost:"$GATEWAYS_V
 echo "For remote CRC use: curl -v -HHost:"$GATEWAYS_VS_HOST " -Hcustom-rl-header:val1 " "http://"$REMOTE_CRC_HOST:$INGRESS_PORT"/ping"
 
 # Egress config for Client app
+oc apply -f internal_Egress.yaml -n $OS_NAMESPACE2
 oc apply -f egress-cfg.yaml -n $OS_NAMESPACE2
 
 #---
