@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.vtb.servicemesh.test.server.model.City;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,7 +37,7 @@ public class ServerService implements ITestService {
     }
 
     @Override
-    public String ping() {
+    public String pingWithDelay() {
         int sleepSecValue = 25;
         long currentTimeNano = System.nanoTime();
         int iteration = count.addAndGet(1);

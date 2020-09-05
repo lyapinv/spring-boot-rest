@@ -1,6 +1,26 @@
 #!/bin/bash
 
-CRC_VM_IP=192.168.122.1
+#REMOTE_CRC_HOST=192.168.1.106
+#OS_NAMESPACE=tutorial
+#CRC_REGISTRY=default-route-openshift-image-registry.apps-crc.testing
+#GATEWAYS_VS_HOST=spring-boot-rest-client.example.ru
+#CLIENT_APPLICATION_NAME=spring-boot-rest-client
+#CLIENT_APPLICATION_PATH=spring-boot-rest-client
+#export CLIENT_VERSION=apV2
+#export CLIENT_IMAGE=$CRC_REGISTRY/tutorial/spring-boot-rest-client:$CLIENT_VERSION
+#docker build -t tutorial/spring-boot-rest-client:${CLIENT_VERSION} spring-boot-rest-client/.
+#docker tag tutorial/spring-boot-rest-client:${CLIENT_VERSION} ${CLIENT_IMAGE}
+#docker push ${CLIENT_IMAGE}
+#OS_NAMESPACE2=tutorial2
+#SERVER_APPLICATION_NAME=spring-boot-rest-server
+#SERVER_APPLICATION_PATH=spring-boot-rest-server
+#export SERVER_VERSION=apV2
+#export SERVER_IMAGE=$CRC_REGISTRY/$OS_NAMESPACE2/spring-boot-rest-server:$SERVER_VERSION
+#docker build -t $OS_NAMESPACE2/spring-boot-rest-server:${SERVER_VERSION} spring-boot-rest-server/.
+#docker tag $OS_NAMESPACE2/spring-boot-rest-server:${SERVER_VERSION} ${SERVER_IMAGE}
+#docker push ${SERVER_IMAGE}
+#docker rmi $(docker images -f "dangling=true" -q)
+
 REMOTE_CRC_HOST=192.168.1.106
 OS_NAMESPACE=tutorial
 CRC_REGISTRY=default-route-openshift-image-registry.apps-crc.testing
@@ -8,10 +28,6 @@ GATEWAYS_VS_HOST=spring-boot-rest-client.example.ru
 
 CLIENT_APPLICATION_NAME=spring-boot-rest-client
 CLIENT_APPLICATION_PATH=spring-boot-rest-client
-#OS_NAMESPACE2=tutorial2
-#SERVER_APPLICATION_NAME=spring-boot-rest-server
-#SERVER_APPLICATION_PATH=spring-boot-rest-server
-#
 echo "Start deployment script for Namespace: " $OS_NAMESPACE
 
 #Init oc
@@ -22,30 +38,28 @@ docker login -u kubeadmin -p $(oc whoami -t) $CRC_REGISTRY
 # Delete project
 oc delete project $OS_NAMESPACE
 
-mvn clean package
-
-##---
+#mvn clean package
 docker login -u kubeadmin -p $(oc whoami -t) $CRC_REGISTRY
 export CRC_REGISTRY=default-route-openshift-image-registry.apps-crc.testing
 
-# Build Client application and deploy
-export CLIENT_VERSION=apV2
-export CLIENT_IMAGE=$CRC_REGISTRY/tutorial/spring-boot-rest-client:$CLIENT_VERSION
-docker build -t tutorial/spring-boot-rest-client:${CLIENT_VERSION} spring-boot-rest-client/.
-docker tag tutorial/spring-boot-rest-client:${CLIENT_VERSION} ${CLIENT_IMAGE}
-docker push ${CLIENT_IMAGE}
+## Build Client application and deploy
+#export CLIENT_VERSION=apV1
+#export CLIENT_IMAGE=$CRC_REGISTRY/tutorial/spring-boot-rest-client:$CLIENT_VERSION
+#docker build -t tutorial/spring-boot-rest-client:${CLIENT_VERSION} spring-boot-rest-client/.
+#docker tag tutorial/spring-boot-rest-client:${CLIENT_VERSION} ${CLIENT_IMAGE}
+#docker push ${CLIENT_IMAGE}
 
 OS_NAMESPACE2=tutorial2
 SERVER_APPLICATION_NAME=spring-boot-rest-server
 SERVER_APPLICATION_PATH=spring-boot-rest-server
 echo "Start deployment script for Namespace: " $OS_NAMESPACE2
 
-# Build Server application and deploy
-export SERVER_VERSION=apV2
-export SERVER_IMAGE=$CRC_REGISTRY/$OS_NAMESPACE2/spring-boot-rest-server:$SERVER_VERSION
-docker build -t $OS_NAMESPACE2/spring-boot-rest-server:${SERVER_VERSION} spring-boot-rest-server/.
-docker tag $OS_NAMESPACE2/spring-boot-rest-server:${SERVER_VERSION} ${SERVER_IMAGE}
-docker push ${SERVER_IMAGE}
+## Build Server application and deploy
+#export SERVER_VERSION=apV1
+#export SERVER_IMAGE=$CRC_REGISTRY/$OS_NAMESPACE2/spring-boot-rest-server:$SERVER_VERSION
+#docker build -t $OS_NAMESPACE2/spring-boot-rest-server:${SERVER_VERSION} spring-boot-rest-server/.
+#docker tag $OS_NAMESPACE2/spring-boot-rest-server:${SERVER_VERSION} ${SERVER_IMAGE}
+#docker push ${SERVER_IMAGE}
 
 # Clear all untagged images
 docker rmi $(docker images -f "dangling=true" -q)
@@ -79,6 +93,7 @@ while [ ${#DEL_RES} != 0 ];
     done && echo "Finish waiting for project deletion.\n";
 echo "Create new project"
 oc new-project $OS_NAMESPACE2
+
 
 # Deploy Client app
 oc apply -f $CLIENT_APPLICATION_PATH/client-deployment.yaml -n $OS_NAMESPACE
@@ -117,11 +132,6 @@ docker rm -f $(docker container ls -q -a --filter name=${LOCAL_SRV_PROJECT})
 CONTAINER_CID=$(docker run -d --name ${LOCAL_SRV_PROJECT} -p ${CONTROLLER_PORT}:${CONTROLLER_PORT} -p $JMX_PORT:$JMX_PORT -e JAVA_OPTS="$MJO" ${LOCAL_NS}/${LOCAL_SRV_PROJECT}:${LOCAL_SRV_VERSION})
 echo "WebService container started. CONTAINER_CID="$CONTAINER_CID
 
-
-# curl -v -HHost:mac.local.host mac.local.host:8080/ping
-# curl -v http://spring-boot-rest-server-svc.tutorial2.svc.cluster.local:8080/ping_chain
-# while true; do curl -v -HHost:spring-boot-rest-client.example.ru  -Hcustom-rl-header:val1  http://192.168.1.106:31067/ping; sleep 1; done
-# while true; do curl -v -HHost:spring-boot-rest-client.example.ru  -Hcustom-rl-header:val1  http://192.168.1.106:31067/pingServer; sleep 1; done
 
 #----------
 #istioctl proxy-config clusters $(oc get pods -n tutorial|grep spring-boot-rest-server|awk '{ print $1 }'|head -1) --fqdn spring-boot-rest-server-svc.tutorial.svc.cluster.local

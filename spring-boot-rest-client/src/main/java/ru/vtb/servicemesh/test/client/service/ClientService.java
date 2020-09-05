@@ -29,13 +29,13 @@ public class ClientService implements ITestService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${SERVER_URI}")
-    private String serverServiceURL;
+    @Value("${NEXT_SERVICE_URI}")
+    private String nextServiceURL;
 
     @Override
     public List<City> findAll() {
         logger.info(" Call client findAll()");
-        ResponseEntity<City[]> responseEntity = restTemplate.getForEntity(serverServiceURL + "/cities", City[].class);
+        ResponseEntity<City[]> responseEntity = restTemplate.getForEntity(nextServiceURL + "/cities", City[].class);
         City[] response = responseEntity.getBody();
         logger.info("!!! List response: {}", response);
         return Arrays.asList(response);
@@ -44,7 +44,7 @@ public class ClientService implements ITestService {
     @Override
     public City findById(Long id) {
         logger.info(" Call client findById({})", id);
-        ResponseEntity<City> responseEntity = restTemplate.getForEntity(serverServiceURL + "/city", City.class);
+        ResponseEntity<City> responseEntity = restTemplate.getForEntity(nextServiceURL + "/city", City.class);
         City response = responseEntity.getBody();
         logger.info("!!! response: {}", response);
         return response;
@@ -59,7 +59,7 @@ public class ClientService implements ITestService {
     @Override
     public String pingServer() {
         logger.info(" Call ping server ");
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(serverServiceURL + "/ping", String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(nextServiceURL + "/ping_chain", String.class);
         String response = responseEntity.getBody();
         logger.info("!!! response from server: {}", response);
         return response;
@@ -87,7 +87,7 @@ public class ClientService implements ITestService {
                 executorService.execute(new Runnable() {
                     @Override
                     public void run() {
-                        ResponseEntity<String> responseEntity = restTemplate.getForEntity(serverServiceURL + uriPath, String.class);
+                        ResponseEntity<String> responseEntity = restTemplate.getForEntity(nextServiceURL + uriPath, String.class);
                         String response = responseEntity.getBody();
                         logger.info("!!! Thread {} - response from server: {}", Thread.currentThread().getName(), response);
                         latch.countDown();
