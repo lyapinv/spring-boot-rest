@@ -131,5 +131,6 @@ echo "WebService container started. CONTAINER_CID="$CONTAINER_CID
 #istioctl dashboard envoy $(oc get pods -n tutorial|grep spring-boot-rest-client|awk '{ print $1 }'|head -1) -n tutorial
 #istioctl dashboard envoy $(oc get pods -n istio-system|grep istio-ingressgateway|awk '{ print $1 }'|head -1) -n istio-system
 
-#curl -v -HHost:spring-boot-rest-client.example.ru -Hcustom-rl-header:val1 http://192.168.1.106:31067/pingServer
-#curl -v -HHost:spring-boot-rest-client.example.ru http://192.168.1.106:31067/ping
+#curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/ping
+#curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/pingServer
+# while true; do curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/pingServer; sleep 1; done

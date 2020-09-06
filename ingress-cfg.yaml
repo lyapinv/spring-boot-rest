@@ -1,3 +1,19 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: spring-boot-rest-client
+  namespace: tutorial
+  labels:
+    app: ingress-api-gateway
+spec:
+  to:
+    kind: Service
+    name: ingress-api-gateway-svc
+    weight: 100
+  port:
+    targetPort: http2
+  wildcardPolicy: None
+---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -5,14 +21,14 @@ metadata:
   namespace: tutorial
 spec:
   selector:
-    istio: ingressgateway # use Istio default gateway implementation
+    istio: ingress-api-gateway # use Istio default gateway implementation
   servers:
     - port:
         number: 80
         name: http
         protocol: HTTP
       hosts:
-        - "spring-boot-rest-client.example.ru"
+        - "spring-boot-rest-client-tutorial.apps-crc.testing"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -21,7 +37,7 @@ metadata:
   namespace: tutorial
 spec:
   hosts:
-    - "spring-boot-rest-client.example.ru"
+    - "spring-boot-rest-client-tutorial.apps-crc.testing"
   gateways:
     - spring-boot-rest-client-gateway
   http:
@@ -29,10 +45,11 @@ spec:
         - uri:
             prefix: /ping
         - uri:
+            prefix: /pingServer
+        - uri:
             prefix: /cities
       route:
         - destination:
             port:
               number: 8080
             host: spring-boot-rest-client-svc.tutorial.svc.cluster.local
-
