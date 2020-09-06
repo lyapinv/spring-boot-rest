@@ -39,7 +39,7 @@ spec:
   hosts:
     - mac.local.host
   gateways:
-    - spring-boot-rest-client-gateway
+    - spring-boot-rest-external
     - mesh
   http:
     - match:
@@ -55,7 +55,7 @@ spec:
           weight: 100
     - match:
         - gateways:
-            - spring-boot-rest-client-gateway
+            - spring-boot-rest-external
           port: 443
       route:
         - destination:
