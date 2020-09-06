@@ -5,7 +5,7 @@ metadata:
   namespace: tutorial
 spec:
   selector:
-    istio: ingressgateway # use Istio default gateway implementation
+    istio: ingress-api-gateway # use Istio default gateway implementation
   servers:
     - port:
         number: 80
@@ -29,10 +29,11 @@ spec:
         - uri:
             prefix: /ping
         - uri:
+            prefix: /pingServer
+        - uri:
             prefix: /cities
       route:
         - destination:
             port:
               number: 8080
             host: spring-boot-rest-client-svc.tutorial.svc.cluster.local
-

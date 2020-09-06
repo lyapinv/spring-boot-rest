@@ -4,7 +4,7 @@ metadata:
   name: spring-boot-rest-external
 spec:
   selector:
-    istio: egressgateway # use Istio default gateway implementation
+    istio: egress-api-gateway # use Istio default gateway implementation
   servers:
     - port:
         number: 443
@@ -48,7 +48,7 @@ spec:
           port: 80
       route:
         - destination:
-            host: istio-egressgateway.istio-system.svc.cluster.local
+            host: egress-api-gateway-svc.tutorial2.svc.cluster.local
             subset: rest
             port:
               number: 443
@@ -69,7 +69,7 @@ kind: DestinationRule
 metadata:
   name: egressgateway-for-rest
 spec:
-  host: istio-egressgateway.istio-system.svc.cluster.local
+  host: egress-api-gateway-svc.tutorial2.svc.cluster.local
   subsets:
     - name: rest
       trafficPolicy:
