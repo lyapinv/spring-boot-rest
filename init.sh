@@ -134,6 +134,8 @@ echo "Deny all AuthorizationPolicy with restricted permissions were applied succ
 #istioctl dashboard envoy $(oc get pods -n tutorial|grep spring-boot-rest-client|awk '{ print $1 }'|head -1) -n tutorial
 #istioctl dashboard envoy $(oc get pods -n istio-system|grep istio-ingressgateway|awk '{ print $1 }'|head -1) -n istio-system
 
+# curl -v spring-boot-rest-client-svc.tutorial.svc.cluster.local:8080/ping
+
 #curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/ping
 #curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/pingServer
 # while true; do curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/pingServer; sleep 1; done

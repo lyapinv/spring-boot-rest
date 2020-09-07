@@ -1,3 +1,6 @@
+--- Запрещаем все взаимодействия внутри SM
+
+  oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -5,7 +8,28 @@ metadata:
   namespace: istio-system
 spec:
   {}
----
+  EOF
+
+--- Разрешаем обращение к сервисам SM снаружи, через Router
+
+  oc apply -f - <<EOF
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-external-to-namespace
+  namespace: istio-system
+spec:
+  action: ALLOW
+  rules:
+    - to:
+        - operation:
+            hosts:
+              - "*.apps-crc.testing"
+  EOF
+
+--- Разрешаем любое взаимодействие внутри Namespace
+
+  oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -14,30 +38,14 @@ metadata:
 spec:
   action: ALLOW
   rules:
-    - to:
-        - operation:
-            hosts:
-            - "spring-boot-rest-client-tutorial.apps-crc.testing"
     - from:
         - source:
             namespaces: ["tutorial"]
----
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: allow-between-namespaces
-  namespace: tutorial2
-spec:
-  action: ALLOW
-  rules:
-    - to:
-        - operation:
-            hosts:
-              - "spring-boot-rest-server-svc.tutorial2.svc.cluster.local"
-    - from:
-        - source:
-            namespaces: ["tutorial"]
----
+  EOF
+
+--- Разрешаем любое взаимодействие внутри Namespace
+
+  oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -46,10 +54,64 @@ metadata:
 spec:
   action: ALLOW
   rules:
-    - to:
-        - operation:
-            hosts:
-              - "mac.local.host"
     - from:
         - source:
             namespaces: ["tutorial2"]
+  EOF
+
+
+#apiVersion: security.istio.io/v1beta1
+#kind: AuthorizationPolicy
+#metadata:
+#  name: deny-all
+#  namespace: istio-system
+#spec:
+#  {}
+#---
+#apiVersion: security.istio.io/v1beta1
+#kind: AuthorizationPolicy
+#metadata:
+#  name: allow-inside-namespace
+#  namespace: tutorial
+#spec:
+#  action: ALLOW
+#  rules:
+#    - to:
+#        - operation:
+#            hosts:
+#            - "spring-boot-rest-client-tutorial.apps-crc.testing"
+#    - from:
+#        - source:
+#            namespaces: ["tutorial"]
+#---
+#apiVersion: security.istio.io/v1beta1
+#kind: AuthorizationPolicy
+#metadata:
+#  name: allow-between-namespaces
+#  namespace: tutorial2
+#spec:
+#  action: ALLOW
+#  rules:
+#    - to:
+#        - operation:
+#            hosts:
+#              - "spring-boot-rest-server-svc.tutorial2.svc.cluster.local"
+#    - from:
+#        - source:
+#            namespaces: ["tutorial"]
+#---
+#apiVersion: security.istio.io/v1beta1
+#kind: AuthorizationPolicy
+#metadata:
+#  name: allow-inside-namespace
+#  namespace: tutorial2
+#spec:
+#  action: ALLOW
+#  rules:
+#    - to:
+#        - operation:
+#            hosts:
+#              - "mac.local.host"
+#    - from:
+#        - source:
+#            namespaces: ["tutorial2"]
