@@ -82,6 +82,8 @@ oc new-project $OS_NAMESPACE2
 
 # Deploy Client app
 oc apply -f $CLIENT_APPLICATION_PATH/client-deployment.yaml -n $OS_NAMESPACE
+# praqma/network-multitool
+# curlimages/curl
 # Deploy Server app
 oc apply -f $SERVER_APPLICATION_PATH/server-deployment.yaml -n $OS_NAMESPACE2
 

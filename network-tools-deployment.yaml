@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: network-tools
+    version: v1
+  name: network-tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: network-tools
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: network-tools
+        group: tutorial-rest-app
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"                 # service mesh sidecar
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+    spec:
+      containers:
+        - name: network-tools
+          command:
+            - /bin/sleep
+            - '99999'
+          image: curlimages/curl:latest
+#          image: praqma/network-multitool
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+          securityContext:
+            privileged: false

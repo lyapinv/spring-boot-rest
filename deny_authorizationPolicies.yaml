@@ -1,6 +1,6 @@
 --- Запрещаем все взаимодействия внутри SM
 
-  oc apply -f - <<EOF
+oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -8,32 +8,28 @@ metadata:
   namespace: istio-system
 spec:
   {}
-  EOF
+EOF
 
---- Разрешаем обращение к сервисам SM снаружи, через Router
+--- curl -v http://spring-boot-rest-client-svc:8080/ping
+--- curl -v http://spring-boot-rest-client-svc.tutorial:8080/ping
+--- curl -v http://spring-boot-rest-client-svc.tutorial.svc.cluster.local:8080/ping
 
-  oc apply -f - <<EOF
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: allow-external-to-namespace
-  namespace: istio-system
-spec:
-  action: ALLOW
-  rules:
-    - to:
-        - operation:
-            hosts:
-              - "*.apps-crc.testing"
-  EOF
+--- curl -v http://spring-boot-rest-server-svc:8080/ping
+--- curl -v http://spring-boot-rest-server-svc.tutorial2:8080/ping
+--- curl -v http://spring-boot-rest-server-svc.tutorial2.svc.cluster.local:8080/ping
+
+--- curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/ping
+
+--- curl -v -HHost:spring-boot-rest-client-tutorial.apps-crc.testing http://ingress-api-gateway-svc.tutorial/ping
+--- curl -v -HHost:spring-boot-rest-client-tutorial.apps-crc.testing http://spring-boot-rest-client-svc.tutorial.svc.cluster.local:8080/ping
 
 --- Разрешаем любое взаимодействие внутри Namespace
 
-  oc apply -f - <<EOF
+oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-inside-namespace
+  name: allow-namespace-inner-communocations
   namespace: tutorial
 spec:
   action: ALLOW
@@ -41,15 +37,15 @@ spec:
     - from:
         - source:
             namespaces: ["tutorial"]
-  EOF
+EOF
 
 --- Разрешаем любое взаимодействие внутри Namespace
 
-  oc apply -f - <<EOF
+oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-inside-namespace
+  name: allow-namespace-inner-communocations
   namespace: tutorial2
 spec:
   action: ALLOW
@@ -57,8 +53,77 @@ spec:
     - from:
         - source:
             namespaces: ["tutorial2"]
-  EOF
+EOF
 
+--- Разрешаем обращение к сервисам SM снаружи, через Router
+--- curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/ping
+
+oc apply -f - <<EOF
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-full-access-to-ingress
+  namespace: istio-system
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: ingress-api-gateway
+  rules:
+### TODO-выяснить применимо ли к TCP
+#    - from:
+#      - source:
+#          namespaces: ["openshift-ingress"]
+#          principals: ["cluster.local/ns/*"]
+### Либо используем конструкцию ниже, если from.source.principals не применимо к TCP
+    - {}
+EOF
+
+
+oc apply -f - <<EOF
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-full-access-to-egress
+  namespace: tutorial2
+#  namespace: istio-system
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: egress-api-gateway
+  rules:
+    ### TODO-выяснить применимо ли к TCP
+#    - from:
+#        - source:
+#            namespaces: ["tutorial2"]
+#    - to:
+#        - {}
+### Либо используем конструкцию ниже, если from.source.principals не применимо к TCP
+    - {}
+EOF
+
+
+--- curl -v http://mac.local.host/ping
+
+#--- Со следующим правилом проблема - применимо только для HTTP
+#oc apply -f - <<EOF
+#apiVersion: security.istio.io/v1beta1
+#kind: AuthorizationPolicy
+#metadata:
+#  name: allow-access-to-ingress
+#  namespace: istio-system
+#spec:
+#  action: ALLOW
+#  selector:
+#    matchLabels:
+#      app: ingress-api-gateway
+#  rules:
+#    - to:
+#        - operation:
+#            hosts:
+#              - "*.apps-crc.testing"
+#EOF
 
 #apiVersion: security.istio.io/v1beta1
 #kind: AuthorizationPolicy
