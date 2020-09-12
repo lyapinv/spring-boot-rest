@@ -82,10 +82,14 @@ oc new-project $OS_NAMESPACE2
 
 # Deploy Client app
 oc apply -f $CLIENT_APPLICATION_PATH/client-deployment.yaml -n $OS_NAMESPACE
+# Deploy clients intermediate container
+oc apply -f network-tools-deployment.yaml -n $OS_NAMESPACE
 # praqma/network-multitool
 # curlimages/curl
 # Deploy Server app
 oc apply -f $SERVER_APPLICATION_PATH/server-deployment.yaml -n $OS_NAMESPACE2
+# Deploy servers intermediate container
+oc apply -f network-tools-deployment.yaml -n $OS_NAMESPACE2
 
 # Ingress config for Client app
 oc apply -f internal_Ingress.yaml -n $OS_NAMESPACE
@@ -122,8 +126,8 @@ CONTAINER_CID=$(docker run -d --name ${LOCAL_SRV_PROJECT} -p ${CONTROLLER_PORT}:
 echo "WebService container started. CONTAINER_CID="$CONTAINER_CID
 
 # Add authorization policy
-oc apply -f deny_authorizationPolicies.yaml
-echo "Deny all AuthorizationPolicy with restricted permissions were applied successfully!"
+#oc apply -f deny_authorizationPolicies.yaml
+#echo "Deny all AuthorizationPolicy with restricted permissions were applied successfully!"
 
 # curl -v -HHost:mac.local.host mac.local.host:8080/ping
 # curl -v http://spring-boot-rest-server-svc.tutorial2.svc.cluster.local:8080/ping_chain

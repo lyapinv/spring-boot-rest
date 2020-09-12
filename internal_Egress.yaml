@@ -41,6 +41,7 @@ metadata:
   labels:
     app: egress-api-gateway
     istio: egress-api-gateway
+    maistra-control-plane: istio-system
 #    app.kubernetes.io/name: gateways
 #    chart: gateways
 spec:
@@ -49,13 +50,15 @@ spec:
     matchLabels:
       app: egress-api-gateway
       istio: egress-api-gateway
+      maistra-control-plane: istio-system
   template:
     metadata:
       labels:
         app: egress-api-gateway
         #        chart: gateways
         istio: egress-api-gateway
-      annotations:
+        maistra-control-plane: istio-system
+    annotations:
         sidecar.istio.io/inject: 'false'
     spec:
       restartPolicy: Always
@@ -162,9 +165,9 @@ spec:
               value: 'false'
             - name: ISTIO_META_WORKLOAD_NAME
               value: egress-api-gateway
-            #            - name: ISTIO_META_OWNER
-            #              value: >-
-            #                kubernetes://apis/apps/v1/namespaces/istio-system/deployments/egress-api-gateway
+            - name: ISTIO_META_OWNER
+              value: >-
+                kubernetes://apis/apps/v1/namespaces/tutorial2/deployments/egress-api-gateway
             - name: ISTIO_META_ROUTER_MODE
               value: sni-dnat
           ports:
@@ -193,7 +196,7 @@ spec:
               mountPath: /etc/istio/egressgateway-ca-certs
           terminationMessagePolicy: File
           image: >-
-            registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:96d9f45b773c9367880a6bfea263d99a691006514732ef8f8e40f79c98603c1a
+            registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:3a2b2eb7d38498319661f5d9f1c484512e154cac07185cafc27b533fb59693c3
           args:
             - proxy
             - router
