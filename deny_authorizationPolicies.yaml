@@ -70,23 +70,18 @@ spec:
     matchLabels:
       app: ingress-api-gateway
   rules:
-### TODO-выяснить применимо ли к TCP
-#    - from:
-#      - source:
-#          namespaces: ["openshift-ingress"]
-#          principals: ["cluster.local/ns/*"]
-### Либо используем конструкцию ниже, если from.source.principals не применимо к TCP
+    ### TODO-выяснить применимо ли к TCP
     - {}
 EOF
 
+---
 
 oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-full-access-to-egress
-  namespace: tutorial2
-#  namespace: istio-system
+  name: allow-full-access-from-egress
+  namespace: istio-system
 spec:
   action: ALLOW
   selector:
@@ -94,12 +89,6 @@ spec:
       app: egress-api-gateway
   rules:
     ### TODO-выяснить применимо ли к TCP
-#    - from:
-#        - source:
-#            namespaces: ["tutorial2"]
-#    - to:
-#        - {}
-### Либо используем конструкцию ниже, если from.source.principals не применимо к TCP
     - {}
 EOF
 
