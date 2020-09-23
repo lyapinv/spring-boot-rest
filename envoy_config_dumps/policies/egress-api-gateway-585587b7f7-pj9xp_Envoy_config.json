@@ -1,0 +1,5080 @@
+{
+ "configs": [
+  {
+   "@type": "type.googleapis.com/envoy.admin.v2alpha.BootstrapConfigDump",
+   "bootstrap": {
+    "node": {
+     "id": "router~10.128.0.86~egress-api-gateway-585587b7f7-pj9xp.tutorial2~tutorial2.svc.cluster.local",
+     "cluster": "egress-api-gateway",
+     "metadata": {
+      "POD_NAME": "egress-api-gateway-585587b7f7-pj9xp",
+      "istio": "egress-api-gateway",
+      "ISTIO_PROXY_VERSION": "1.4.8",
+      "CLUSTER_ID": "Kubernetes",
+      "LABELS": {
+       "app": "egress-api-gateway",
+       "chart": "gateways",
+       "istio": "egress-api-gateway"
+      },
+      "ISTIO_PROXY_SHA": "e29db8accb6a66fcc08b41a495c6efa141e4644a",
+      "NAME": "egress-api-gateway-585587b7f7-pj9xp",
+      "app": "egress-api-gateway",
+      "NAMESPACE": "tutorial2",
+      "EXCHANGE_KEYS": "NAME,NAMESPACE,INSTANCE_IPS,LABELS,OWNER,PLATFORM_METADATA,WORKLOAD_NAME,CANONICAL_TELEMETRY_SERVICE,MESH_ID,SERVICE_ACCOUNT",
+      "INSTANCE_IPS": "10.128.0.86,fe80::88e0:6cff:fe59:ae1",
+      "SERVICE_ACCOUNT": "egress-api-gateway-service-account",
+      "CONFIG_NAMESPACE": "tutorial2",
+      "chart": "gateways",
+      "OWNER": "kubernetes://apis/apps/v1/namespaces/tutorial2/deployments/egress-api-gateway",
+      "WORKLOAD_NAME": "egress-api-gateway",
+      "ISTIO_VERSION": "maistra-1.1.7",
+      "ROUTER_MODE": "sni-dnat"
+     },
+     "locality": {},
+     "build_version": "9c370debc995021bca271b3a673d47054217e175/1.12.5-dev/OSSM 1.1.7-1.el8/RELEASE/OpenSSL_1.1.1d"
+    },
+    "static_resources": {
+     "listeners": [
+      {
+       "address": {
+        "socket_address": {
+         "address": "0.0.0.0",
+         "port_value": 15090
+        }
+       },
+       "filter_chains": [
+        {
+         "filters": [
+          {
+           "name": "envoy.http_connection_manager",
+           "config": {
+            "route_config": {
+             "virtual_hosts": [
+              {
+               "name": "backend",
+               "routes": [
+                {
+                 "route": {
+                  "cluster": "prometheus_stats"
+                 },
+                 "match": {
+                  "prefix": "/stats/prometheus"
+                 }
+                }
+               ],
+               "domains": [
+                "*"
+               ]
+              }
+             ]
+            },
+            "codec_type": "AUTO",
+            "http_filters": {
+             "name": "envoy.router"
+            },
+            "stat_prefix": "stats"
+           }
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "clusters": [
+      {
+       "name": "prometheus_stats",
+       "type": "STATIC",
+       "connect_timeout": "0.250s",
+       "hosts": [
+        {
+         "socket_address": {
+          "address": "127.0.0.1",
+          "port_value": 15000
+         }
+        }
+       ]
+      },
+      {
+       "name": "xds-grpc",
+       "type": "STRICT_DNS",
+       "connect_timeout": "10s",
+       "hosts": [
+        {
+         "socket_address": {
+          "address": "istio-pilot.istio-system",
+          "port_value": 15010
+         }
+        }
+       ],
+       "circuit_breakers": {
+        "thresholds": [
+         {
+          "max_connections": 100000,
+          "max_pending_requests": 100000,
+          "max_requests": 100000
+         },
+         {
+          "priority": "HIGH",
+          "max_connections": 100000,
+          "max_pending_requests": 100000,
+          "max_requests": 100000
+         }
+        ]
+       },
+       "http2_protocol_options": {},
+       "dns_refresh_rate": "300s",
+       "dns_lookup_family": "V4_ONLY",
+       "upstream_connection_options": {
+        "tcp_keepalive": {
+         "keepalive_time": 300
+        }
+       }
+      },
+      {
+       "name": "zipkin",
+       "type": "STRICT_DNS",
+       "connect_timeout": "1s",
+       "hosts": [
+        {
+         "socket_address": {
+          "address": "zipkin",
+          "port_value": 9411
+         }
+        }
+       ],
+       "dns_refresh_rate": "300s",
+       "dns_lookup_family": "V4_ONLY"
+      }
+     ]
+    },
+    "dynamic_resources": {
+     "lds_config": {
+      "ads": {}
+     },
+     "cds_config": {
+      "ads": {}
+     },
+     "ads_config": {
+      "api_type": "GRPC",
+      "grpc_services": [
+       {
+        "envoy_grpc": {
+         "cluster_name": "xds-grpc"
+        }
+       }
+      ]
+     }
+    },
+    "tracing": {
+     "http": {
+      "name": "envoy.zipkin",
+      "config": {
+       "collector_cluster": "zipkin",
+       "trace_id_128bit": "true",
+       "shared_span_context": "false",
+       "collector_endpoint": "/api/v1/spans"
+      }
+     }
+    },
+    "admin": {
+     "access_log_path": "/dev/null",
+     "address": {
+      "socket_address": {
+       "address": "127.0.0.1",
+       "port_value": 15000
+      }
+     }
+    },
+    "stats_config": {
+     "stats_tags": [
+      {
+       "tag_name": "cluster_name",
+       "regex": "^cluster\\.((.+?(\\..+?\\.svc\\.cluster\\.local)?)\\.)"
+      },
+      {
+       "tag_name": "tcp_prefix",
+       "regex": "^tcp\\.((.*?)\\.)\\w+?$"
+      },
+      {
+       "tag_name": "response_code",
+       "regex": "(response_code=\\.=(.+?);\\.;)|_rq(_(\\.d{3}))$"
+      },
+      {
+       "tag_name": "response_code_class",
+       "regex": "_rq(_(\\dxx))$"
+      },
+      {
+       "tag_name": "http_conn_manager_listener_prefix",
+       "regex": "^listener(?=\\.).*?\\.http\\.(((?:[_.[:digit:]]*|[_\\[\\]aAbBcCdDeEfF[:digit:]]*))\\.)"
+      },
+      {
+       "tag_name": "http_conn_manager_prefix",
+       "regex": "^http\\.(((?:[_.[:digit:]]*|[_\\[\\]aAbBcCdDeEfF[:digit:]]*))\\.)"
+      },
+      {
+       "tag_name": "listener_address",
+       "regex": "^listener\\.(((?:[_.[:digit:]]*|[_\\[\\]aAbBcCdDeEfF[:digit:]]*))\\.)"
+      },
+      {
+       "tag_name": "mongo_prefix",
+       "regex": "^mongo\\.(.+?)\\.(collection|cmd|cx_|op_|delays_|decoding_)(.*?)$"
+      },
+      {
+       "tag_name": "reporter",
+       "regex": "(reporter=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "source_namespace",
+       "regex": "(source_namespace=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "source_workload",
+       "regex": "(source_workload=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "source_workload_namespace",
+       "regex": "(source_workload_namespace=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "source_principal",
+       "regex": "(source_principal=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "source_app",
+       "regex": "(source_app=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "source_version",
+       "regex": "(source_version=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "destination_namespace",
+       "regex": "(destination_namespace=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "destination_workload",
+       "regex": "(destination_workload=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "destination_workload_namespace",
+       "regex": "(destination_workload_namespace=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "destination_principal",
+       "regex": "(destination_principal=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "destination_app",
+       "regex": "(destination_app=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "destination_version",
+       "regex": "(destination_version=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "destination_service",
+       "regex": "(destination_service=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "destination_service_name",
+       "regex": "(destination_service_name=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "destination_service_namespace",
+       "regex": "(destination_service_namespace=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "request_protocol",
+       "regex": "(request_protocol=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "response_flags",
+       "regex": "(response_flags=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "grpc_response_status",
+       "regex": "(grpc_response_status=\\.=(.*?);\\.;)"
+      },
+      {
+       "tag_name": "connection_security_policy",
+       "regex": "(connection_security_policy=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "permissive_response_code",
+       "regex": "(permissive_response_code=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "permissive_response_policyid",
+       "regex": "(permissive_response_policyid=\\.=(.+?);\\.;)"
+      },
+      {
+       "tag_name": "cache",
+       "regex": "(cache\\.(.+?)\\.)"
+      },
+      {
+       "tag_name": "component",
+       "regex": "(component\\.(.+?)\\.)"
+      },
+      {
+       "tag_name": "tag",
+       "regex": "(tag\\.(.+?)\\.)"
+      }
+     ],
+     "use_all_default_tags": false,
+     "stats_matcher": {
+      "inclusion_list": {
+       "patterns": [
+        {
+         "prefix": "reporter="
+        },
+        {
+         "prefix": "component"
+        },
+        {
+         "prefix": "cluster_manager"
+        },
+        {
+         "prefix": "listener_manager"
+        },
+        {
+         "prefix": "http_mixer_filter"
+        },
+        {
+         "prefix": "tcp_mixer_filter"
+        },
+        {
+         "prefix": "server"
+        },
+        {
+         "prefix": "cluster.xds-grpc"
+        },
+        {
+         "suffix": "ssl_context_update_by_sds"
+        }
+       ]
+      }
+     }
+    }
+   },
+   "last_updated": "2020-09-16T10:14:13.078Z"
+  },
+  {
+   "@type": "type.googleapis.com/envoy.admin.v2alpha.ClustersConfigDump",
+   "version_info": "2020-09-16T10:41:45Z/51",
+   "static_clusters": [
+    {
+     "cluster": {
+      "name": "prometheus_stats",
+      "type": "STATIC",
+      "connect_timeout": "0.250s",
+      "hosts": [
+       {
+        "socket_address": {
+         "address": "127.0.0.1",
+         "port_value": 15000
+        }
+       }
+      ]
+     },
+     "last_updated": "2020-09-16T10:14:13.096Z"
+    },
+    {
+     "cluster": {
+      "name": "xds-grpc",
+      "type": "STRICT_DNS",
+      "connect_timeout": "10s",
+      "hosts": [
+       {
+        "socket_address": {
+         "address": "istio-pilot.istio-system",
+         "port_value": 15010
+        }
+       }
+      ],
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 100000,
+         "max_pending_requests": 100000,
+         "max_requests": 100000
+        },
+        {
+         "priority": "HIGH",
+         "max_connections": 100000,
+         "max_pending_requests": 100000,
+         "max_requests": 100000
+        }
+       ]
+      },
+      "http2_protocol_options": {},
+      "dns_refresh_rate": "300s",
+      "dns_lookup_family": "V4_ONLY",
+      "upstream_connection_options": {
+       "tcp_keepalive": {
+        "keepalive_time": 300
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.182Z"
+    },
+    {
+     "cluster": {
+      "name": "zipkin",
+      "type": "STRICT_DNS",
+      "connect_timeout": "1s",
+      "hosts": [
+       {
+        "socket_address": {
+         "address": "zipkin",
+         "port_value": 9411
+        }
+       }
+      ],
+      "dns_refresh_rate": "300s",
+      "dns_lookup_family": "V4_ONLY"
+     },
+     "last_updated": "2020-09-16T10:14:13.182Z"
+    }
+   ],
+   "dynamic_active_clusters": [
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "BlackHoleCluster",
+      "type": "STATIC",
+      "connect_timeout": "10s"
+     },
+     "last_updated": "2020-09-16T10:14:14.066Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.14250_._.jaeger-collector-headless.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.14250_._.jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.071Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.14250_._.jaeger-collector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.14250_._.jaeger-collector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-jaeger-collector"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.072Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.14267_._.jaeger-collector-headless.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.14267_._.jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.071Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.14267_._.jaeger-collector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.14267_._.jaeger-collector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-jaeger-collector"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.072Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.14268_._.jaeger-collector-headless.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.14268_._.jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.071Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.14268_._.jaeger-collector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.14268_._.jaeger-collector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-jaeger-collector"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.072Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15004_._.istio-policy.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15004_._.istio-policy.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-policy"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.073Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15004_._.istio-telemetry.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15004_._.istio-telemetry.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-telemetry"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.074Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15010_._.istio-pilot.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15010_._.istio-pilot.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.075Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15011_._.istio-pilot.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15011_._.istio-pilot.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.075Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15014_._.istio-citadel.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15014_._.istio-citadel.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.068Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15014_._.istio-galley.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15014_._.istio-galley.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.069Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15014_._.istio-pilot.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15014_._.istio-pilot.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.095Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15014_._.istio-policy.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15014_._.istio-policy.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "max_requests_per_connection": 10000,
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 10000,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-policy"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.074Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15014_._.istio-sidecar-injector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15014_._.istio-sidecar-injector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.100Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15014_._.istio-telemetry.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15014_._.istio-telemetry.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "max_requests_per_connection": 10000,
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 10000,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-telemetry"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.075Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15020_._.ingress-api-gateway-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15020_._.ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.108Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15020_._.istio-ingressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15020_._.istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.099Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound_.15443_._.egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15443_._.egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.779Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15443_._.ingress-api-gateway-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15443_._.ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.111Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15443_._.istio-egressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15443_._.istio-egressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.099Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.15443_._.istio-ingressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15443_._.istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.100Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound_.15443_.rest_.egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.15443_.rest_.egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.779Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.20001_._.kiali.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.20001_._.kiali.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.107Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.3000_._.grafana.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.3000_._.grafana.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.107Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.42422_._.istio-telemetry.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.42422_._.istio-telemetry.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "max_requests_per_connection": 10000,
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 10000,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-telemetry"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.075Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound_.443_._.egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.443_._.egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.778Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.443_._.ingress-api-gateway-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.443_._.ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.111Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.443_._.istio-egressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.443_._.istio-egressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.098Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.443_._.istio-galley.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.443_._.istio-galley.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.069Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.443_._.istio-ingressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.443_._.istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.100Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.443_._.istio-sidecar-injector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.443_._.istio-sidecar-injector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.100Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.443_._.jaeger-query.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.443_._.jaeger-query.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.073Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound_.443_.rest_.egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.443_.rest_.egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.779Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.5778_._.jaeger-agent.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.5778_._.jaeger-agent.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.070Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.8060_._.istio-citadel.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.8060_._.istio-citadel.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.067Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.8080_._.istio-pilot.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.8080_._.istio-pilot.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.076Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.8080_._.spring-boot-rest-client-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.8080_._.spring-boot-rest-client-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.108Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.8080_._.spring-boot-rest-server-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.8080_._.spring-boot-rest-server-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.108Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound_.80_._.egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.80_._.egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.777Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.80_._.ingress-api-gateway-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.80_._.ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.108Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.80_._.istio-egressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.80_._.istio-egressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.098Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.80_._.istio-ingressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.80_._.istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.099Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound_.80_.rest_.egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.80_.rest_.egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.778Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.9090_._.prometheus.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.9090_._.prometheus.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.069Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.9091_._.istio-policy.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.9091_._.istio-policy.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-policy"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.073Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.9091_._.istio-telemetry.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.9091_._.istio-telemetry.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-telemetry"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.074Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.9411_._.jaeger-collector-headless.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.9411_._.jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.070Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.9411_._.jaeger-collector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.9411_._.jaeger-collector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-jaeger-collector"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.072Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.9411_._.zipkin.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.9411_._.zipkin.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-zipkin"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.073Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound_.9901_._.istio-galley.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound_.9901_._.istio-galley.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.070Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|14250||jaeger-collector-headless.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|14250||jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/jaeger-ui-proxy"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.14250_._.jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.824Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|14250||jaeger-collector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|14250||jaeger-collector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-jaeger-collector"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.885Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|14267||jaeger-collector-headless.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|14267||jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/jaeger-ui-proxy"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.14267_._.jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.845Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|14267||jaeger-collector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|14267||jaeger-collector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-jaeger-collector"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.885Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|14268||jaeger-collector-headless.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|14268||jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/jaeger-ui-proxy"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.14268_._.jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.884Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|14268||jaeger-collector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|14268||jaeger-collector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-jaeger-collector"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.885Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15004||istio-policy.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15004||istio-policy.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-mixer-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio",
+         "h2"
+        ]
+       },
+       "sni": "outbound_.15004_._.istio-policy.istio-system.svc.cluster.local"
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-policy"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.917Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15004||istio-telemetry.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15004||istio-telemetry.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-mixer-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio",
+         "h2"
+        ]
+       },
+       "sni": "outbound_.15004_._.istio-telemetry.istio-system.svc.cluster.local"
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-telemetry"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.920Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15010||istio-pilot.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15010||istio-pilot.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-pilot-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio",
+         "h2"
+        ]
+       },
+       "sni": "outbound_.15010_._.istio-pilot.istio-system.svc.cluster.local"
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.923Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15011||istio-pilot.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15011||istio-pilot.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-pilot-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15011_._.istio-pilot.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.938Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15014||istio-citadel.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15014||istio-citadel.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-citadel-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15014_._.istio-citadel.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.726Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15014||istio-galley.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15014||istio-galley.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-galley-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15014_._.istio-galley.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.777Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15014||istio-pilot.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15014||istio-pilot.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-pilot-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15014_._.istio-pilot.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.942Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15014||istio-policy.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15014||istio-policy.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "max_requests_per_connection": 10000,
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 10000,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-policy"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.918Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15014||istio-sidecar-injector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15014||istio-sidecar-injector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-sidecar-injector-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15014_._.istio-sidecar-injector.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.003Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15014||istio-telemetry.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15014||istio-telemetry.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "max_requests_per_connection": 10000,
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 10000,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-telemetry"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.920Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:13Z/42",
+     "cluster": {
+      "name": "outbound|15020||ingress-api-gateway-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15020||ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/tutorial/sa/ingress-api-gateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15020_._.ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.142Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15020||istio-ingressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15020||istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15020_._.istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.960Z"
+    },
+    {
+     "version_info": "2020-09-16T10:41:45Z/51",
+     "cluster": {
+      "name": "outbound|15443|rest|egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15443|rest|egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/tutorial2/sa/egress-api-gateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "mac.local.host"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:41:46.166Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound|15443||egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15443||egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.774Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:13Z/42",
+     "cluster": {
+      "name": "outbound|15443||ingress-api-gateway-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15443||ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/tutorial/sa/ingress-api-gateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15443_._.ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.186Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15443||istio-egressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15443||istio-egressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-egressgateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15443_._.istio-egressgateway.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.956Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|15443||istio-ingressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|15443||istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.15443_._.istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.979Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|20001||kiali.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|20001||kiali.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/kiali-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.20001_._.kiali.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.007Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|3000||grafana.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|3000||grafana.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/grafana"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.3000_._.grafana.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.005Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|42422||istio-telemetry.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|42422||istio-telemetry.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "max_requests_per_connection": 10000,
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 10000,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-telemetry"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.921Z"
+    },
+    {
+     "version_info": "2020-09-16T10:41:45Z/51",
+     "cluster": {
+      "name": "outbound|443|rest|egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|443|rest|egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:41:46.162Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound|443||egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|443||egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.772Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:13Z/42",
+     "cluster": {
+      "name": "outbound|443||ingress-api-gateway-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|443||ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/tutorial/sa/ingress-api-gateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.443_._.ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.184Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|443||istio-egressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|443||istio-egressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-egressgateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.443_._.istio-egressgateway.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.954Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|443||istio-galley.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|443||istio-galley.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-galley-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.443_._.istio-galley.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.730Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|443||istio-ingressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|443||istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.443_._.istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.977Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|443||istio-sidecar-injector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|443||istio-sidecar-injector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-sidecar-injector-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.443_._.istio-sidecar-injector.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.981Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|443||jaeger-query.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|443||jaeger-query.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/jaeger-ui-proxy"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.443_._.jaeger-query.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.888Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|5778||jaeger-agent.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|5778||jaeger-agent.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/jaeger-ui-proxy"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.5778_._.jaeger-agent.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.782Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|8060||istio-citadel.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|8060||istio-citadel.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-citadel-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio",
+         "h2"
+        ]
+       },
+       "sni": "outbound_.8060_._.istio-citadel.istio-system.svc.cluster.local"
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.724Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|8080||istio-pilot.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|8080||istio-pilot.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-pilot-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.8080_._.istio-pilot.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.940Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound|8080||mac.local.host",
+      "type": "STRICT_DNS",
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "dns_refresh_rate": "300s",
+      "dns_lookup_family": "V4_ONLY",
+      "load_assignment": {
+       "cluster_name": "outbound|8080||mac.local.host",
+       "endpoints": [
+        {
+         "lb_endpoints": [
+          {
+           "endpoint": {
+            "address": {
+             "socket_address": {
+              "address": "mac.local.host",
+              "port_value": 8080
+             }
+            }
+           },
+           "load_balancing_weight": 1
+          }
+         ],
+         "load_balancing_weight": 1
+        }
+       ]
+      },
+      "respect_dns_ttl": true
+     },
+     "last_updated": "2020-09-16T10:14:22.775Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:27Z/46",
+     "cluster": {
+      "name": "outbound|8080||spring-boot-rest-client-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|8080||spring-boot-rest-client-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/tutorial/sa/default"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.8080_._.spring-boot-rest-client-svc.tutorial.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:29.780Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:30Z/47",
+     "cluster": {
+      "name": "outbound|8080||spring-boot-rest-server-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|8080||spring-boot-rest-server-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/tutorial2/sa/default"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.8080_._.spring-boot-rest-server-svc.tutorial2.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:32.782Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound|80|rest|egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|80|rest|egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.771Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:21Z/45",
+     "cluster": {
+      "name": "outbound|80||egress-api-gateway-svc.tutorial2.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|80||egress-api-gateway-svc.tutorial2.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/tutorial2/destination-rule/egressgateway-for-rest"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:22.771Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:13Z/42",
+     "cluster": {
+      "name": "outbound|80||ingress-api-gateway-svc.tutorial.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|80||ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/tutorial/sa/ingress-api-gateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio",
+         "h2"
+        ]
+       },
+       "sni": "outbound_.80_._.ingress-api-gateway-svc.tutorial.svc.cluster.local"
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:14.152Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|80||istio-egressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|80||istio-egressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-egressgateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio",
+         "h2"
+        ]
+       },
+       "sni": "outbound_.80_._.istio-egressgateway.istio-system.svc.cluster.local"
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.944Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|80||istio-ingressgateway.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|80||istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio",
+         "h2"
+        ]
+       },
+       "sni": "outbound_.80_._.istio-ingressgateway.istio-system.svc.cluster.local"
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.962Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|9090||prometheus.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|9090||prometheus.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/prometheus"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.9090_._.prometheus.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.728Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|9091||istio-policy.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|9091||istio-policy.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-policy"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.889Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|9091||istio-telemetry.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|9091||istio-telemetry.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/istio-telemetry"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.918Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|9411||jaeger-collector-headless.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|9411||jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/jaeger-ui-proxy"
+         ]
+        },
+        "alpn_protocols": [
+         "istio"
+        ]
+       },
+       "sni": "outbound_.9411_._.jaeger-collector-headless.istio-system.svc.cluster.local"
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.822Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|9411||jaeger-collector.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|9411||jaeger-collector.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-jaeger-collector"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.884Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|9411||zipkin.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|9411||zipkin.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/disable-mtls-zipkin"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.889Z"
+    },
+    {
+     "version_info": "2020-09-16T10:14:09Z/41",
+     "cluster": {
+      "name": "outbound|9901||istio-galley.istio-system.svc.cluster.local",
+      "type": "EDS",
+      "eds_cluster_config": {
+       "eds_config": {
+        "ads": {}
+       },
+       "service_name": "outbound|9901||istio-galley.istio-system.svc.cluster.local"
+      },
+      "connect_timeout": "10s",
+      "circuit_breakers": {
+       "thresholds": [
+        {
+         "max_connections": 4294967295,
+         "max_pending_requests": 4294967295,
+         "max_requests": 4294967295,
+         "max_retries": 4294967295
+        }
+       ]
+      },
+      "tls_context": {
+       "common_tls_context": {
+        "tls_certificates": [
+         {
+          "certificate_chain": {
+           "filename": "/etc/certs/cert-chain.pem"
+          },
+          "private_key": {
+           "filename": "/etc/certs/key.pem"
+          }
+         }
+        ],
+        "validation_context": {
+         "trusted_ca": {
+          "filename": "/etc/certs/root-cert.pem"
+         },
+         "verify_subject_alt_name": [
+          "spiffe://cluster.local/ns/istio-system/sa/istio-galley-service-account"
+         ]
+        },
+        "alpn_protocols": [
+         "istio",
+         "h2"
+        ]
+       },
+       "sni": "outbound_.9901_._.istio-galley.istio-system.svc.cluster.local"
+      },
+      "http2_protocol_options": {
+       "max_concurrent_streams": 1073741824
+      },
+      "metadata": {
+       "filter_metadata": {
+        "istio": {
+         "config": "/apis/networking/v1alpha3/namespaces/istio-system/destination-rule/default"
+        }
+       }
+      }
+     },
+     "last_updated": "2020-09-16T10:14:13.779Z"
+    }
+   ]
+  },
+  {
+   "@type": "type.googleapis.com/envoy.admin.v2alpha.ListenersConfigDump",
+   "version_info": "2020-09-16T10:41:03Z/49",
+   "static_listeners": [
+    {
+     "listener": {
+      "address": {
+       "socket_address": {
+        "address": "0.0.0.0",
+        "port_value": 15090
+       }
+      },
+      "filter_chains": [
+       {
+        "filters": [
+         {
+          "name": "envoy.http_connection_manager",
+          "config": {
+           "codec_type": "AUTO",
+           "http_filters": {
+            "name": "envoy.router"
+           },
+           "stat_prefix": "stats",
+           "route_config": {
+            "virtual_hosts": [
+             {
+              "domains": [
+               "*"
+              ],
+              "name": "backend",
+              "routes": [
+               {
+                "route": {
+                 "cluster": "prometheus_stats"
+                },
+                "match": {
+                 "prefix": "/stats/prometheus"
+                }
+               }
+              ]
+             }
+            ]
+           }
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "last_updated": "2020-09-16T10:14:13.196Z"
+    }
+   ],
+   "dynamic_active_listeners": [
+    {
+     "version_info": "2020-09-16T10:41:03Z/49",
+     "listener": {
+      "name": "0.0.0.0_15443",
+      "address": {
+       "socket_address": {
+        "address": "0.0.0.0",
+        "port_value": 15443
+       }
+      },
+      "filter_chains": [
+       {
+        "filter_chain_match": {
+         "server_names": [
+          "mac.local.host"
+         ]
+        },
+        "tls_context": {
+         "common_tls_context": {
+          "tls_params": {},
+          "tls_certificates": [
+           {
+            "certificate_chain": {
+             "filename": "/etc/certs/cert-chain.pem"
+            },
+            "private_key": {
+             "filename": "/etc/certs/key.pem"
+            }
+           }
+          ],
+          "validation_context": {
+           "trusted_ca": {
+            "filename": "/etc/certs/root-cert.pem"
+           }
+          },
+          "alpn_protocols": [
+           "h2",
+           "http/1.1"
+          ]
+         },
+         "require_client_certificate": true
+        },
+        "filters": [
+         {
+          "name": "envoy.http_connection_manager",
+          "typed_config": {
+           "@type": "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager",
+           "stat_prefix": "outbound_0.0.0.0_15443",
+           "http_filters": [
+            {
+             "name": "mixer",
+             "typed_config": {
+              "@type": "type.googleapis.com/istio.mixer.v1.config.client.HttpClientConfig",
+              "transport": {
+               "network_fail_policy": {
+                "policy": "FAIL_CLOSE",
+                "base_retry_wait": "0.080s",
+                "max_retry_wait": "1s"
+               },
+               "check_cluster": "outbound|9091||istio-policy.istio-system.svc.cluster.local",
+               "report_cluster": "outbound|9091||istio-telemetry.istio-system.svc.cluster.local",
+               "report_batch_max_entries": 100,
+               "report_batch_max_time": "1s"
+              },
+              "service_configs": {
+               "default": {
+                "disable_check_calls": true
+               }
+              },
+              "default_destination_service": "default",
+              "mixer_attributes": {
+               "attributes": {
+                "context.proxy_version": {
+                 "string_value": "65535.65535.65535"
+                },
+                "context.reporter.kind": {
+                 "string_value": "outbound"
+                },
+                "context.reporter.uid": {
+                 "string_value": "kubernetes://egress-api-gateway-585587b7f7-pj9xp.tutorial2"
+                },
+                "source.namespace": {
+                 "string_value": "tutorial2"
+                },
+                "source.uid": {
+                 "string_value": "kubernetes://egress-api-gateway-585587b7f7-pj9xp.tutorial2"
+                }
+               }
+              },
+              "forward_attributes": {
+               "attributes": {
+                "source.uid": {
+                 "string_value": "kubernetes://egress-api-gateway-585587b7f7-pj9xp.tutorial2"
+                }
+               }
+              },
+              "ignore_forwarded_attributes": true
+             }
+            },
+            {
+             "name": "envoy.cors"
+            },
+            {
+             "name": "envoy.fault"
+            },
+            {
+             "name": "envoy.router"
+            }
+           ],
+           "tracing": {
+            "operation_name": "EGRESS",
+            "client_sampling": {
+             "value": 100
+            },
+            "random_sampling": {
+             "value": 100
+            },
+            "overall_sampling": {
+             "value": 100
+            }
+           },
+           "http_protocol_options": {},
+           "server_name": "istio-envoy",
+           "use_remote_address": true,
+           "generate_request_id": true,
+           "forward_client_cert_details": "SANITIZE_SET",
+           "set_current_client_cert_details": {
+            "subject": true,
+            "cert": true,
+            "dns": true,
+            "uri": true
+           },
+           "upgrade_configs": [
+            {
+             "upgrade_type": "websocket"
+            }
+           ],
+           "stream_idle_timeout": "0s",
+           "normalize_path": true,
+           "rds": {
+            "config_source": {
+             "ads": {}
+            },
+            "route_config_name": "https.15443.https.spring-boot-rest-external.tutorial2"
+           }
+          }
+         }
+        ]
+       }
+      ],
+      "listener_filters": [
+       {
+        "name": "envoy.listener.tls_inspector"
+       }
+      ],
+      "traffic_direction": "OUTBOUND"
+     },
+     "last_updated": "2020-09-16T10:41:04.087Z"
+    }
+   ]
+  },
+  {
+   "@type": "type.googleapis.com/envoy.admin.v2alpha.ScopedRoutesConfigDump"
+  },
+  {
+   "@type": "type.googleapis.com/envoy.admin.v2alpha.RoutesConfigDump",
+   "static_route_configs": [
+    {
+     "route_config": {
+      "virtual_hosts": [
+       {
+        "name": "backend",
+        "domains": [
+         "*"
+        ],
+        "routes": [
+         {
+          "match": {
+           "prefix": "/stats/prometheus"
+          },
+          "route": {
+           "cluster": "prometheus_stats"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     "last_updated": "2020-09-16T10:14:13.196Z"
+    }
+   ],
+   "dynamic_route_configs": [
+    {
+     "version_info": "2020-09-16T10:41:33Z/50",
+     "route_config": {
+      "name": "https.15443.https.spring-boot-rest-external.tutorial2",
+      "virtual_hosts": [
+       {
+        "name": "mac.local.host:15443",
+        "domains": [
+         "mac.local.host",
+         "mac.local.host:15443"
+        ],
+        "routes": [
+         {
+          "match": {
+           "prefix": "/",
+           "case_sensitive": true
+          },
+          "route": {
+           "cluster": "outbound|8080||mac.local.host",
+           "timeout": "0s",
+           "retry_policy": {
+            "retry_on": "connect-failure,refused-stream,unavailable,cancelled,resource-exhausted,retriable-status-codes",
+            "num_retries": 2,
+            "retry_host_predicate": [
+             {
+              "name": "envoy.retry_host_predicates.previous_hosts"
+             }
+            ],
+            "host_selection_retry_max_attempts": "5",
+            "retriable_status_codes": [
+             503
+            ]
+           },
+           "max_grpc_timeout": "0s"
+          },
+          "metadata": {
+           "filter_metadata": {
+            "istio": {
+             "config": "/apis/networking/v1alpha3/namespaces/tutorial2/virtual-service/rest-external-to-egress"
+            }
+           }
+          },
+          "decorator": {
+           "operation": "mac.local.host:8080/*"
+          },
+          "typed_per_filter_config": {
+           "mixer": {
+            "@type": "type.googleapis.com/istio.mixer.v1.config.client.ServiceConfig",
+            "disable_check_calls": true,
+            "mixer_attributes": {
+             "attributes": {
+              "destination.service.host": {
+               "string_value": "mac.local.host"
+              },
+              "destination.service.name": {
+               "string_value": "mac.local.host"
+              },
+              "destination.service.namespace": {
+               "string_value": "tutorial2"
+              }
+             }
+            },
+            "forward_attributes": {
+             "attributes": {
+              "destination.service.host": {
+               "string_value": "mac.local.host"
+              },
+              "destination.service.name": {
+               "string_value": "mac.local.host"
+              },
+              "destination.service.namespace": {
+               "string_value": "tutorial2"
+              }
+             }
+            }
+           }
+          }
+         }
+        ]
+       }
+      ],
+      "validate_clusters": false
+     },
+     "last_updated": "2020-09-16T10:41:34.165Z"
+    }
+   ]
+  },
+  {
+   "@type": "type.googleapis.com/envoy.admin.v2alpha.SecretsConfigDump"
+  }
+ ]
+}
