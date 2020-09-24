@@ -145,3 +145,5 @@ echo "WebService container started. CONTAINER_CID="$CONTAINER_CID
 #curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/ping
 #curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/pingServer
 # while true; do curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/pingServer; sleep 1; done
+
+# istioctl x describe pod $(oc get pods -n tutorial|grep ingress|awk '{ print $1 }'|head -1)

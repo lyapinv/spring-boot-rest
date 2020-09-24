@@ -114,7 +114,7 @@ spec:
             successThreshold: 1
             failureThreshold: 30
           terminationMessagePath: /dev/termination-log
-          name: egressgateway
+          name: istio-proxy
           env:
             - name: NODE_NAME
               valueFrom:
@@ -212,7 +212,7 @@ spec:
             - '--serviceCluster'
             - egress-api-gateway
             - '--zipkinAddress'
-            - 'zipkin:9411'
+            - 'zipkin.istio-system:9411'
             - '--proxyAdminPort'
             - '15000'
             - '--statusPort'

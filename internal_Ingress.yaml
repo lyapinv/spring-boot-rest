@@ -64,7 +64,7 @@ spec:
       terminationGracePeriodSeconds: 30
       securityContext: {}
       containers:
-        - name: ingressgateway
+        - name: istio-proxy
           image: "registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:3a2b2eb7d38498319661f5d9f1c484512e154cac07185cafc27b533fb59693c3"
           imagePullPolicy: IfNotPresent
           ports:
@@ -87,7 +87,7 @@ spec:
             - proxy
             - router
             - '--domain'
-            - tutorial.svc.cluster.local
+            - $(POD_NAMESPACE).svc.cluster.local
             - -v
             - "2"
             - '--discoveryRefreshDelay'

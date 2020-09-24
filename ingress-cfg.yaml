@@ -53,3 +53,22 @@ spec:
             port:
               number: 8080
             host: spring-boot-rest-client-svc.tutorial.svc.cluster.local
+
+--- Создаем ServiceEntry, тк в нашем Control plane установлен флаг "defaultConfigVisibilitySettings",
+--- поэтому для обраащения к сервисам другого Namespace нужно явно добавлять внешний сервис в реестр
+
+oc apply -f - <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: spring-boot-rest-server
+spec:
+  hosts:
+    - spring-boot-rest-server-svc.tutorial2.svc.cluster.local
+  ports:
+    - number: 8080
+      name: http
+      protocol: HTTP
+  location: MESH_INTERNAL
+  resolution: DNS
+EOF
