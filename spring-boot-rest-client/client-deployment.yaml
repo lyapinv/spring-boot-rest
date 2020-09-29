@@ -30,8 +30,18 @@ spec:
     spec:
       containers:
         - env:
-#            - name: JAVA_OPTIONS
-#              value: -Xms128m -Xmx128m -Xmn128m
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+            - name: JAVA_OPTS
+              value: -Dcom.sun.management.jmxremote
+                -Dcom.sun.management.jmxremote.port=9998
+                -Dcom.sun.management.jmxremote.rmi.port=9998
+                -Dcom.sun.management.jmxremote.authenticate=false
+                -Dcom.sun.management.jmxremote.ssl=false
+                -Dcom.sun.management.jmxremote.local.only=false
             - name: NEXT_SERVICE_URI
               valueFrom:
                 configMapKeyRef:
@@ -43,6 +53,9 @@ spec:
           ports:
             - containerPort: 8080
               name: http
+              protocol: TCP
+            - containerPort: 9998
+              name: tcp-jmx
               protocol: TCP
           resources:
             requests:

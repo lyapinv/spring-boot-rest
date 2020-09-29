@@ -11,6 +11,7 @@ export CLIENT_IMAGE=$CRC_REGISTRY/tutorial/spring-boot-rest-client:$CLIENT_VERSI
 docker build -t tutorial/spring-boot-rest-client:${CLIENT_VERSION} spring-boot-rest-client/.
 docker tag tutorial/spring-boot-rest-client:${CLIENT_VERSION} ${CLIENT_IMAGE}
 docker push ${CLIENT_IMAGE}
+
 OS_NAMESPACE2=tutorial2
 SERVER_APPLICATION_NAME=spring-boot-rest-server
 SERVER_APPLICATION_PATH=spring-boot-rest-server
