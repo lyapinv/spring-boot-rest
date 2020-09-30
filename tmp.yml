@@ -1,0 +1,106 @@
+curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/ping
+
+curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/pingServer
+
+---
+
+oc apply -f - <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: spring-boot-rest-server
+  namespace: tutorial
+spec:
+  hosts:
+    - spring-boot-rest-server-svc.tutorial2.svc.cluster.local
+  ports:
+    - number: 8080
+      name: http
+      protocol: HTTP
+  location: MESH_INTERNAL
+  resolution: DNS
+EOF
+
+---
+
+oc apply -f - <<EOF
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-namespace-inner-communications
+  namespace: tutorial
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["tutorial", "istio-system"]
+EOF
+
+---
+
+oc apply -f - <<EOF
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-access-to-ingress
+  namespace: istio-system
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: ingress-api-gateway
+  rules:
+    ### TODO-выяснить применимо ли к TCP
+    - {}
+EOF
+
+---
+
+oc apply -f - <<EOF
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-namespace-inner-communications
+  namespace: tutorial2
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["tutorial2", "istio-system"]
+EOF
+
+---
+
+oc apply -f - <<EOF
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-access-to-egress
+  namespace: istio-system
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: egress-api-gateway
+  rules:
+    ### TODO-выяснить применимо ли к TCP
+    - {}
+EOF
+
+---
+
+oc apply -f - <<EOF
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-access-from-any-sm-namespaces
+  namespace: tutorial2
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["*"]
+EOF

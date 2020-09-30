@@ -22,6 +22,7 @@ metadata:
 spec:
   selector:
     istio: ingress-api-gateway # use Istio default gateway implementation
+    ns: dso-msa-services
   servers:
     - port:
         number: 80
@@ -57,11 +58,11 @@ spec:
 --- Создаем ServiceEntry, тк в нашем Control plane установлен флаг "defaultConfigVisibilitySettings",
 --- поэтому для обраащения к сервисам другого Namespace нужно явно добавлять внешний сервис в реестр
 
-oc apply -f - <<EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
   name: spring-boot-rest-server
+  namespace: tutorial
 spec:
   hosts:
     - spring-boot-rest-server-svc.tutorial2.svc.cluster.local
@@ -71,4 +72,3 @@ spec:
       protocol: HTTP
   location: MESH_INTERNAL
   resolution: DNS
-EOF

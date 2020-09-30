@@ -17,7 +17,6 @@
 
 --- Запрещаем все взаимодействия внутри SM
 
-oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -25,31 +24,27 @@ metadata:
   namespace: istio-system
 spec:
   {}
-EOF
 
 --- Разрешаем любое взаимодействие внутри Namespace
 
-oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-namespace-inner-communocations
+  name: allow-namespace-inner-communications
   namespace: tutorial
 spec:
   action: ALLOW
   rules:
     - from:
         - source:
-            namespaces: ["tutorial"]
-EOF
+            namespaces: ["tutorial", "istio-system"]
 
 --- Разрешаем любое взаимодействие внутри Namespace
 
-oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-namespace-inner-communocations
+  name: allow-namespace-inner-communications
   namespace: tutorial2
 spec:
   action: ALLOW
@@ -57,11 +52,9 @@ spec:
     - from:
         - source:
             namespaces: ["tutorial2"]
-EOF
 
 ---
 
-oc apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -75,11 +68,10 @@ spec:
   rules:
     ### TODO-выяснить применимо ли к TCP
     - {}
-EOF
 
 ---
 
-oc apply -f - <<EOF
+
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -93,11 +85,11 @@ spec:
   rules:
     ### TODO-выяснить применимо ли к TCP
     - {}
-EOF
+
 
 ---
 
-oc apply -f - <<EOF
+
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -113,7 +105,7 @@ spec:
         - source:
             namespaces: ["tutorial2"]
 #            principals: ["cluster.local/ns/tutorial2/sa/*"]
-EOF
+
 
 --- Разрешаем обращение к сервисам SM снаружи, через Router
 --- curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/ping
