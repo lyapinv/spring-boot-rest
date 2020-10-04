@@ -1,20 +1,4 @@
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: spring-boot-rest-external
-spec:
-  selector:
-    istio: egress-api-gateway # use Istio default gateway implementation
-  servers:
-    - port:
-        number: 443
-        name: https-
-        protocol: HTTPS
-      hosts:
-        - "mac.local.host"
-      tls:
-        mode: ISTIO_MUTUAL
----
+#oc apply -f - <<EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
@@ -22,14 +6,54 @@ metadata:
 spec:
   hosts:
     - mac.local.host
-#  exportTo:
-#    - "."
+  exportTo:
+    - "."
   ports:
     - number: 8080
       name: http
       protocol: HTTP
   location: MESH_EXTERNAL
   resolution: DNS
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: egress-api-gateway-external-svc
+  annotations:
+  labels:
+    istio: egress-api-gateway
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8083
+  selector:
+    app: egress-api-gateway
+    istio: egress-api-gateway
+    ns: tutorial2
+  type: ClusterIP
+  sessionAffinity: None
+status:
+  loadBalancer: {}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: spring-boot-rest-external
+spec:
+  selector:
+    istio: egress-api-gateway # use Istio default gateway implementation
+    ns: tutorial2
+  servers:
+    - port:
+        number: 8083
+        name: http-ext
+        protocol: HTTPS
+      hosts:
+        - "mac.local.host"
+      tls:
+        mode: ISTIO_MUTUAL
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -38,6 +62,8 @@ metadata:
 spec:
   hosts:
     - mac.local.host
+  exportTo:
+    - "."
   gateways:
     - spring-boot-rest-external
     - mesh
@@ -48,15 +74,15 @@ spec:
           port: 80
       route:
         - destination:
-            host: egress-api-gateway-svc.tutorial2.svc.cluster.local
+            host: egress-api-gateway-external-svc.tutorial2.svc.cluster.local
             subset: rest
             port:
-              number: 443
+              number: 8080
           weight: 100
     - match:
         - gateways:
             - spring-boot-rest-external
-          port: 443
+          port: 8083
       route:
         - destination:
             host: mac.local.host
@@ -69,46 +95,11 @@ kind: DestinationRule
 metadata:
   name: egressgateway-for-rest
 spec:
-  host: egress-api-gateway-svc.tutorial2.svc.cluster.local
+  host: egress-api-gateway-external-svc.tutorial2.svc.cluster.local
   subsets:
     - name: rest
       trafficPolicy:
         tls:
           mode: ISTIO_MUTUAL
           sni: mac.local.host
----
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  name: spring-boot-rest-external
-#spec:
-#  clusterIP: None
-#  ports:
-#    - protocol: TCP
-#      port: 8080
----
-#apiVersion: v1
-#kind: Endpoints
-#metadata:
-#  name: spring-boot-rest-external
-#subsets:
-#  - addresses:
-#      - ip: 192.168.1.103
-#    ports:
-#      - port: 8080
----
-#apiVersion: networking.istio.io/v1alpha3
-#kind: ServiceEntry
-#metadata:
-#  name: spring-boot-rest-external
-#spec:
-#  hosts:
-#    - spring-boot-rest-external.tutorial.svc.cluster.local
-##  exportTo:
-##    - "."
-#  ports:
-#    - number: 8080
-#      name: http
-#      protocol: HTTP
-#  location: MESH_EXTERNAL
-#  resolution: DNS
+#EOF

@@ -41,23 +41,20 @@ metadata:
   labels:
     app: egress-api-gateway
     istio: egress-api-gateway
-    maistra-control-plane: istio-system
-#    app.kubernetes.io/name: gateways
-#    chart: gateways
+    ns: tutorial2
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: egress-api-gateway
       istio: egress-api-gateway
-      maistra-control-plane: istio-system
+      ns: tutorial2
   template:
     metadata:
       labels:
         app: egress-api-gateway
-        #        chart: gateways
         istio: egress-api-gateway
-        maistra-control-plane: istio-system
+        ns: tutorial2
     annotations:
         sidecar.istio.io/inject: 'false'
     spec:
@@ -156,9 +153,6 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.namespace
-            - name: ISTIO_METAJSON_LABELS
-              value: >
-                {"app":"egress-api-gateway","chart":"gateways","istio":"egress-api-gateway"}
             - name: ISTIO_META_CLUSTER_ID
               value: Kubernetes
             - name: SDS_ENABLED
@@ -171,18 +165,7 @@ spec:
             - name: ISTIO_META_ROUTER_MODE
               value: sni-dnat
           ports:
-            - name: http2
-              containerPort: 8080
-              protocol: TCP
-            - name: https
-              containerPort: 8443
-              protocol: TCP
-            - name: tls
-              containerPort: 15443
-              protocol: TCP
-            - name: http-envoy-prom
-              containerPort: 15090
-              protocol: TCP
+            - containerPort: 15020
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: istio-certs

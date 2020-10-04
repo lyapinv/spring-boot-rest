@@ -30,8 +30,6 @@ spec:
     spec:
       containers:
         - env:
-#            - name: JAVA_OPTIONS
-#              value: -Xms128m -Xmx128m -Xmn128m
             - name: NEXT_SERVICE_URI
               valueFrom:
                 configMapKeyRef:
@@ -46,10 +44,10 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: "50m"
+              cpu: "100m"
               memory: "128Mi"
             limits:
-              cpu: "100m"
+              cpu: "250m"
               memory: "256Mi"
           securityContext:
             privileged: false

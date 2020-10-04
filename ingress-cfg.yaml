@@ -8,11 +8,30 @@ metadata:
 spec:
   to:
     kind: Service
-    name: ingress-api-gateway-svc
+    name: ingress-api-gateway-tutorial-svc
     weight: 100
   port:
-    targetPort: http2
+    targetPort: http
   wildcardPolicy: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-api-gateway-tutorial-svc
+  annotations:
+  labels:
+    istio: ingress-api-gateway
+spec:
+  type: ClusterIP
+  selector:
+    app: ingress-api-gateway
+    istio: ingress-api-gateway
+    ns: tutorial
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8081
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -22,10 +41,10 @@ metadata:
 spec:
   selector:
     istio: ingress-api-gateway # use Istio default gateway implementation
-    ns: dso-msa-services
+    ns: tutorial
   servers:
     - port:
-        number: 80
+        number: 8081
         name: http
         protocol: HTTP
       hosts:
@@ -54,10 +73,7 @@ spec:
             port:
               number: 8080
             host: spring-boot-rest-client-svc.tutorial.svc.cluster.local
-
---- Создаем ServiceEntry, тк в нашем Control plane установлен флаг "defaultConfigVisibilitySettings",
---- поэтому для обраащения к сервисам другого Namespace нужно явно добавлять внешний сервис в реестр
-
+---
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
@@ -72,3 +88,6 @@ spec:
       protocol: HTTP
   location: MESH_INTERNAL
   resolution: DNS
+--- Создаем ServiceEntry, тк в нашем Control plane установлен флаг "defaultConfigVisibilitySettings",
+--- поэтому для обраащения к сервисам другого Namespace нужно явно добавлять внешний сервис в реестр
+

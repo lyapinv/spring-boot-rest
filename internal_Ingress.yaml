@@ -42,17 +42,20 @@ metadata:
   labels:
     app: ingress-api-gateway
     istio: ingress-api-gateway
+    ns: tutorial
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: ingress-api-gateway
       istio: ingress-api-gateway
+      ns: tutorial
   template:
     metadata:
       labels:
         app: ingress-api-gateway
         istio: ingress-api-gateway
+        ns: tutorial
       annotations:
         sidecar.istio.io/inject: "false"
         scheduler.alpha.kubernetes.io/critical-pod: ""
@@ -66,23 +69,9 @@ spec:
       containers:
         - name: istio-proxy
           image: "registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:3a2b2eb7d38498319661f5d9f1c484512e154cac07185cafc27b533fb59693c3"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
-            - name: status-port
-              containerPort: 15020
-              protocol: TCP
-            - name: http2
-              containerPort: 8080
-              protocol: TCP
-            - name: https
-              containerPort: 8443
-              protocol: TCP
-            - name: tls
-              containerPort: 15443
-              protocol: TCP
-            - name: http-envoy-prom
-              containerPort: 15090
-              protocol: TCP
+            - containerPort: 15020
           args:
             - proxy
             - router
