@@ -1,0 +1,105 @@
+oc apply -f - <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: spring-boot-rest-external-2
+spec:
+  hosts:
+    - google.com
+  exportTo:
+    - "."
+  ports:
+    - number: 80
+      name: http-goog
+      protocol: HTTP
+  location: MESH_EXTERNAL
+  resolution: DNS
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: egress-api-gateway-external-2-svc
+  annotations:
+  labels:
+    istio: egress-api-gateway
+spec:
+  ports:
+    - name: http-goog
+      protocol: TCP
+      port: 8084
+      targetPort: 8084
+  selector:
+    app: egress-api-gateway
+    istio: egress-api-gateway
+    ns: tutorial2
+status:
+  loadBalancer: {}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: spring-boot-rest-external-2
+spec:
+  selector:
+    istio: egress-api-gateway # use Istio default gateway implementation
+    ns: tutorial2
+  servers:
+    - port:
+        number: 8084
+        name: http-goog
+        protocol: HTTPS
+      hosts:
+        - "google.com"
+      tls:
+        mode: ISTIO_MUTUAL
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: rest-external-2-to-egress
+spec:
+  hosts:
+    - google.com
+  exportTo:
+    - "."
+  gateways:
+    - spring-boot-rest-external-2
+    - mesh
+  http:
+    - match:
+        - gateways:
+            - mesh
+          port: 80
+          sniHosts:
+            - google.com
+      route:
+        - destination:
+            host: egress-api-gateway-external-2-svc.tutorial2.svc.cluster.local
+            subset: goog
+            port:
+              number: 8084
+          weight: 100
+    - match:
+        - gateways:
+            - spring-boot-rest-external-2
+          port: 8084
+      route:
+        - destination:
+            host: google.com
+            port:
+              number: 80
+          weight: 100
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: egressgateway-for-google
+spec:
+  host: egress-api-gateway-external-2-svc.tutorial2.svc.cluster.local
+  subsets:
+    - name: goog
+      trafficPolicy:
+        tls:
+          mode: ISTIO_MUTUAL
+          sni: google.com
+EOF

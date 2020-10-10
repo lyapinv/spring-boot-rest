@@ -3,7 +3,8 @@ apiVersion: v1
 metadata:
   name: spring-boot-rest-cfg
 data:
-  next.service.uri: http://mac.local.host
+  next.service.uri: http://ext-service.tutorial2.svc.cluster.local
+#  next.service.uri: http://mac.local.host
 ---
 apiVersion: apps/v1
 kind: Deployment

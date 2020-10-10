@@ -1,11 +1,27 @@
 #oc apply -f - <<EOF
+#apiVersion: networking.istio.io/v1alpha3
+#kind: ServiceEntry
+#metadata:
+#  name: spring-boot-rest-external
+#spec:
+#  hosts:
+#    - mac.local.host
+#  exportTo:
+#    - "."
+#  ports:
+#    - number: 8080
+#      name: http
+#      protocol: HTTP
+#  location: MESH_EXTERNAL
+#  resolution: DNS
+
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
   name: spring-boot-rest-external
 spec:
   hosts:
-    - mac.local.host
+    - local.host
   exportTo:
     - "."
   ports:
@@ -14,6 +30,27 @@ spec:
       protocol: HTTP
   location: MESH_EXTERNAL
   resolution: DNS
+  endpoints:
+    - address: mac.local.host
+      ports:
+        http: 8080
+    - address: lenovo.local.host
+      ports:
+        http: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ext-service
+  annotations:
+  labels:
+    app: spring-boot-rest
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
 ---
 kind: Service
 apiVersion: v1
@@ -51,7 +88,7 @@ spec:
         name: http-ext
         protocol: HTTPS
       hosts:
-        - "mac.local.host"
+        - "ext-service.tutorial2.svc.cluster.local"
       tls:
         mode: ISTIO_MUTUAL
 ---
@@ -61,7 +98,7 @@ metadata:
   name: rest-external-to-egress
 spec:
   hosts:
-    - mac.local.host
+    - ext-service.tutorial2.svc.cluster.local
   exportTo:
     - "."
   gateways:
@@ -85,7 +122,7 @@ spec:
           port: 8083
       route:
         - destination:
-            host: mac.local.host
+            host: local.host
             port:
               number: 8080
           weight: 100
@@ -101,5 +138,5 @@ spec:
       trafficPolicy:
         tls:
           mode: ISTIO_MUTUAL
-          sni: mac.local.host
+          sni: ext-service.tutorial2.svc.cluster.local
 #EOF
