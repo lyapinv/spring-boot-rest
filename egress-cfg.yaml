@@ -123,6 +123,7 @@ spec:
       route:
         - destination:
             host: local.host
+            subset: ext-svc-circuitbreaker
             port:
               number: 8080
           weight: 100
@@ -139,4 +140,18 @@ spec:
         tls:
           mode: ISTIO_MUTUAL
           sni: ext-service.tutorial2.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: ext-local_host-circuitbreaker
+spec:
+  host: local.host
+  subsets:
+    - name: ext-svc-circuitbreaker
+      trafficPolicy:
+        outlierDetection:
+          consecutiveErrors: 2
+          interval: 30s
+          baseEjectionTime: 15s
 #EOF
