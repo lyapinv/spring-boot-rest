@@ -260,3 +260,18 @@ spec:
 #    - from:
 #        - source:
 #            namespaces: ["tutorial2"]
+
+oc apply -f - <<EOF
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-access-to-ingress
+spec:
+  action: ALLOW
+  selector:
+    matchLabels:
+      app: ingress-api-gateway
+  rules:
+    - {}
+EOF
+
