@@ -126,8 +126,8 @@ CONTAINER_CID=$(docker run -d --name ${LOCAL_SRV_PROJECT} -p ${CONTROLLER_PORT}:
 echo "WebService container started. CONTAINER_CID="$CONTAINER_CID
 
 # Add authorization policy
-#oc apply -f deny_authorizationPolicies.yaml
-#echo "Deny all AuthorizationPolicy with restricted permissions were applied successfully!"
+oc apply -f deny_authorizationPolicies.yaml
+echo "Deny all AuthorizationPolicy with restricted permissions were applied successfully!"
 
 # curl -v -HHost:mac.local.host mac.local.host:8080/ping
 # curl -v http://spring-boot-rest-server-svc.tutorial2.svc.cluster.local:8080/ping_chain
