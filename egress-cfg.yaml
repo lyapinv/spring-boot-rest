@@ -144,7 +144,7 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: ext-local_host-circuitbreaker
+  name: ext-local-host-circuitbreaker
 spec:
   host: local.host
   subsets:
@@ -154,4 +154,3 @@ spec:
           consecutiveErrors: 2
           interval: 30s
           baseEjectionTime: 15s
-#EOF

@@ -18,6 +18,7 @@ echo "Start deployment script for Namespace: " $OS_NAMESPACE
 eval $(crc oc-env)
 
 docker login -u kubeadmin -p $(oc whoami -t) $CRC_REGISTRY
+#oc login -u kubeadmin -p fq66o-KsVBU-cnKBU-xLpqd https://api.crc.testing:6443
 
 # Delete project
 oc delete project $OS_NAMESPACE
@@ -126,9 +127,10 @@ CONTAINER_CID=$(docker run -d --name ${LOCAL_SRV_PROJECT} -p ${CONTROLLER_PORT}:
 echo "WebService container started. CONTAINER_CID="$CONTAINER_CID
 
 # Add authorization policy
-#oc apply -f deny_authorizationPolicies.yaml
-#echo "Deny all AuthorizationPolicy with restricted permissions were applied successfully!"
+oc apply -f deny_authorizationPolicies.yaml
+echo "Deny all AuthorizationPolicy with restricted permissions were applied successfully!"
 
+# curl -v http://ext-service.tutorial2.svc.cluster.local/ping
 # curl -v -HHost:mac.local.host mac.local.host:8080/ping
 # curl -v http://spring-boot-rest-server-svc.tutorial2.svc.cluster.local:8080/ping_chain
 # while true; do curl -v -HHost:spring-boot-rest-client.example.ru  -Hcustom-rl-header:val1  http://192.168.1.106:31067/ping; sleep 1; done
