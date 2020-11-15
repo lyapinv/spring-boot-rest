@@ -23,7 +23,7 @@ docker login -u kubeadmin -p $(oc whoami -t) $CRC_REGISTRY
 # Delete project
 oc delete project $OS_NAMESPACE
 
-mvn clean package
+mvn -DskipTests=true clean package
 
 ##---
 docker login -u kubeadmin -p $(oc whoami -t) $CRC_REGISTRY
@@ -84,13 +84,14 @@ oc new-project $OS_NAMESPACE2
 # Deploy Client app
 oc apply -f $CLIENT_APPLICATION_PATH/client-deployment.yaml -n $OS_NAMESPACE
 # Deploy clients intermediate container
-oc apply -f network-tools-deployment.yaml -n $OS_NAMESPACE
+#oc apply -f network-tools-deployment.yaml -n $OS_NAMESPACE
+
 # praqma/network-multitool
 # curlimages/curl
 # Deploy Server app
 oc apply -f $SERVER_APPLICATION_PATH/server-deployment.yaml -n $OS_NAMESPACE2
 # Deploy servers intermediate container
-oc apply -f network-tools-deployment.yaml -n $OS_NAMESPACE2
+#oc apply -f network-tools-deployment.yaml -n $OS_NAMESPACE2
 
 # Ingress config for Client app
 oc apply -f internal_Ingress.yaml -n $OS_NAMESPACE
@@ -147,5 +148,7 @@ echo "Deny all AuthorizationPolicy with restricted permissions were applied succ
 #curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/ping
 #curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/pingServer
 # while true; do curl -v http://spring-boot-rest-client-tutorial.apps-crc.testing/pingServer; sleep 1; done
+
+# curl -v http://ext-service-mac:8080/ping
 
 # istioctl x describe pod $(oc get pods -n tutorial|grep ingress|awk '{ print $1 }'|head -1)

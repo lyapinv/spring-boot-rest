@@ -166,7 +166,7 @@ spec:
               value: sni-dnat
           ports:
             - containerPort: 15020
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           volumeMounts:
             - name: istio-certs
               readOnly: true

@@ -57,6 +57,12 @@ public class ClientService implements ITestService {
     }
 
     @Override
+    public String bigBody(byte[] data) {
+        logger.info(" client received bigBody request. length: {}", data.length);
+        return "clients received data. length: " + data.length;
+    }
+
+    @Override
     public String pingServer() {
         logger.info(" Call ping server ");
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(nextServiceURL + "/ping_chain", String.class);

@@ -61,18 +61,14 @@ metadata:
     istio: egress-api-gateway
 spec:
   ports:
-    - name: http
+    - name: http-ext
       protocol: TCP
-      port: 8080
+      port: 8083
       targetPort: 8083
   selector:
     app: egress-api-gateway
     istio: egress-api-gateway
     ns: tutorial2
-  type: ClusterIP
-  sessionAffinity: None
-status:
-  loadBalancer: {}
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -114,7 +110,7 @@ spec:
             host: egress-api-gateway-external-svc.tutorial2.svc.cluster.local
             subset: rest
             port:
-              number: 8080
+              number: 8083
           weight: 100
     - match:
         - gateways:

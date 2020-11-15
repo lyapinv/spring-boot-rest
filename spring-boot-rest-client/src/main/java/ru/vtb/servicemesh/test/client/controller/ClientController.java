@@ -1,15 +1,16 @@
 package ru.vtb.servicemesh.test.client.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 import ru.vtb.servicemesh.test.client.model.City;
 import ru.vtb.servicemesh.test.client.service.ITestService;
 
 import java.util.List;
 
 @RestController
+@Slf4j
 public class ClientController {
 
     @Autowired
@@ -18,6 +19,11 @@ public class ClientController {
     @RequestMapping("/ping")
     public String ping() {
         return clientService.ping();
+    }
+
+    @PostMapping(value = "/bigBody", consumes = { MediaType.APPLICATION_OCTET_STREAM_VALUE })
+    public String bigBody(@RequestBody() byte[] data) {
+        return clientService.bigBody(data);
     }
 
     @RequestMapping("/pingServer")

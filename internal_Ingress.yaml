@@ -68,8 +68,8 @@ spec:
       securityContext: {}
       containers:
         - name: istio-proxy
-          image: "registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:3a2b2eb7d38498319661f5d9f1c484512e154cac07185cafc27b533fb59693c3"
-          imagePullPolicy: Always
+          image: >-
+            registry.redhat.io/openshift-service-mesh/proxyv2-rhel8@sha256:3a2b2eb7d38498319661f5d9f1c484512e154cac07185cafc27b533fb59693c3
           ports:
             - containerPort: 15020
           args:
@@ -100,8 +100,9 @@ spec:
             - '--discoveryAddress'
             - istio-pilot.istio-system:15010
           resources:
-            requests:
+            limits:
               cpu: 50m
+              memory: 128Mi
           readinessProbe:
             httpGet:
               path: /healthz/ready

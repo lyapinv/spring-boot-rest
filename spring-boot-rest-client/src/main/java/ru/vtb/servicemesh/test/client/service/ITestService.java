@@ -12,6 +12,8 @@ public interface ITestService {
 
     String ping();
 
+    String bigBody(byte[] data);
+
     String pingServer();
 
     String pingServerRx(Long loopCount);

@@ -68,6 +68,8 @@ spec:
             prefix: /pingServer
         - uri:
             prefix: /cities
+        - uri:
+            prefix: /bigBody
       route:
         - destination:
             port:

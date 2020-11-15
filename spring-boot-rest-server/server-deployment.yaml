@@ -4,7 +4,7 @@ metadata:
   name: spring-boot-rest-cfg
 data:
   next.service.uri: http://ext-service.tutorial2.svc.cluster.local
-#  next.service.uri: http://mac.local.host
+#  next.service.uri: http://mac.local.host:8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -26,8 +26,9 @@ spec:
         group: tutorial-rest-app
         version: v1
       annotations:
-        sidecar.istio.io/inject: "true"                 # service mesh sidecar
-#        sidecar.istio.io/rewriteAppHTTPProbers: "true"  # settings for probe when mTLS enabled
+        sidecar.istio.io/inject: "true"                       # service mesh sidecar
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"        # settings for probe when mTLS enabled
+#        traffic.sidecar.istio.io/excludeOutboundPorts: '8080'
     spec:
       containers:
         - env:
