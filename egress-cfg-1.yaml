@@ -25,7 +25,7 @@ spec:
   exportTo:
     - "."
   ports:
-    - number: 8083
+    - number: 8080
       name: http
       protocol: HTTP
   location: MESH_EXTERNAL
@@ -37,25 +37,6 @@ spec:
     - address: lenovo.local.host
       ports:
         http: 8080
-
----
-
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  name: spring-boot-rest-external-mac
-spec:
-  hosts:
-    - mac.local.host
-  exportTo:
-    - "."
-  ports:
-    - number: 8080
-      name: http-mac
-      protocol: HTTP
-  location: MESH_EXTERNAL
-  resolution: DNS
-
 ---
 kind: Service
 apiVersion: v1
@@ -100,7 +81,7 @@ spec:
   servers:
     - port:
         number: 8083
-        name: https-ext-gw
+        name: http-ext-gw
         protocol: HTTPS
       hosts:
         - "ext-service.tutorial2.svc.cluster.local"
@@ -123,7 +104,7 @@ spec:
     - match:
         - gateways:
             - mesh
-          port: 8080
+          port: 80
       route:
         - destination:
             host: egress-api-gateway-external-svc.tutorial2.svc.cluster.local
@@ -140,9 +121,8 @@ spec:
             host: local.host
             subset: ext-svc-circuitbreaker
             port:
-              number: 8083
+              number: 8080
           weight: 100
-
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
