@@ -11,6 +11,9 @@
     </parent>
 
     <artifactId>spring-boot-rest-client</artifactId>
+    <properties>
+        <httpclient.version>4.5.5</httpclient.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -22,6 +25,18 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.0</version>
         </dependency>
     </dependencies>
 </project>
