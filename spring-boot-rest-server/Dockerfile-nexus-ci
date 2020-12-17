@@ -1,0 +1,8 @@
+FROM public-docker-proxy-registry-redhat-io.nexus-ci.corp.dev.vtb/openjdk/openjdk-11-rhel7
+ARG JAR_FILE=target/spring-boot-rest-server*.jar
+COPY ${JAR_FILE} /application.jar
+RUN mkdir -p /tmp/uploads /tmp/certs
+COPY uploads/* /tmp/uploads/
+COPY certs/* /tmp/certs/
+EXPOSE 8081
+ENTRYPOINT exec java $JAVA_OPTS -jar /application.jar

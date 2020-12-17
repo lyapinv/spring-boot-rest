@@ -22,7 +22,8 @@ public class FileUploadService {
     @Autowired
     private FileDownloadService fileDownloadService;
 
-    @Value("${FILE_UPLOAD_SERVER_URI:https://localhost:8082}")
+//    @Value("${FILE_UPLOAD_SERVER_URI:https://localhost:8082}")
+    @Value("${FILE_UPLOAD_SERVER_URI:http://localhost:8082}")
     private String fileUploadServerURL;
 
     public void postFile(String filename) {

@@ -1,23 +1,37 @@
 kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
-  name: spring-boot-rest-client
-  namespace: tutorial
+  name: big-file-download-client
   labels:
     app: ingress-api-gateway
 spec:
   to:
     kind: Service
-    name: ingress-api-gateway-tutorial-svc
+    name: ingress-api-gateway-big-file-svc
     weight: 100
   port:
-    targetPort: http
+    targetPort: http-gateway-big-file-svc
+  wildcardPolicy: None
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: big-file-download-server
+  labels:
+    app: ingress-api-gateway
+spec:
+  to:
+    kind: Service
+    name: ingress-api-gateway-big-file-server-svc
+    weight: 100
+  port:
+    targetPort: http-gateway-big-file-server-svc
   wildcardPolicy: None
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: ingress-api-gateway-tutorial-svc
+  name: ingress-api-gateway-big-file-svc
   annotations:
   labels:
     istio: ingress-api-gateway
@@ -26,40 +40,75 @@ spec:
   selector:
     app: ingress-api-gateway
     istio: ingress-api-gateway
-    ns: tutorial
+    ns: dso-api-gateway
   ports:
-    - name: http
+    - name: http-gateway-big-file-svc
       protocol: TCP
       port: 80
       targetPort: 8081
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-api-gateway-big-file-server-svc
+  annotations:
+  labels:
+    istio: ingress-api-gateway
+spec:
+  type: ClusterIP
+  selector:
+    app: ingress-api-gateway
+    istio: ingress-api-gateway
+    ns: dso-api-gateway
+  ports:
+    - name: http-gateway-big-file-server-svc
+      protocol: TCP
+      port: 80
+      targetPort: 8082
+---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: spring-boot-rest-client-gateway
-  namespace: tutorial
+  name: big-file-download-client-gateway
+  namespace: dso-api-gateway
 spec:
   selector:
     istio: ingress-api-gateway # use Istio default gateway implementation
-    ns: tutorial
+    ns: dso-api-gateway
   servers:
     - port:
         number: 8081
-        name: http
+        name: http-big-file
         protocol: HTTP
       hosts:
-        - "spring-boot-rest-client-tutorial.apps-crc.testing"
+        - "big-file-download-client-dso-api-gateway.apps.d0-oscp.corp.dev.vtb"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: big-file-download-server-gateway
+  namespace: dso-api-gateway
+spec:
+  selector:
+    istio: ingress-api-gateway # use Istio default gateway implementation
+    ns: dso-api-gateway
+  servers:
+    - port:
+        number: 8082
+        name: http-big-file-server
+        protocol: HTTP
+      hosts:
+        - "big-file-download-server-dso-api-gateway.apps.d0-oscp.corp.dev.vtb"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: spring-boot-rest-client-ingress-vs
-  namespace: tutorial
+  name: big-file-download-client-ingress-vs
 spec:
   hosts:
-    - "spring-boot-rest-client-tutorial.apps-crc.testing"
+    - "big-file-download-client-dso-api-gateway.apps.d0-oscp.corp.dev.vtb"
   gateways:
-    - spring-boot-rest-client-gateway
+    - big-file-download-client-gateway
   http:
     - match:
         - uri:
@@ -70,26 +119,53 @@ spec:
             prefix: /cities
         - uri:
             prefix: /bigBody
+        - uri:
+            prefix: /downloadFile
       route:
         - destination:
             port:
               number: 8080
-            host: spring-boot-rest-client-svc.tutorial.svc.cluster.local
+            host: big-file-download-client-svc.dso-api-gateway.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: big-file-download-server-ingress-vs
+spec:
+  hosts:
+    - "big-file-download-server-dso-api-gateway.apps.d0-oscp.corp.dev.vtb"
+  gateways:
+    - big-file-download-server-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /ping
+        - uri:
+            prefix: /pingServer
+        - uri:
+            prefix: /cities
+        - uri:
+            prefix: /bigBody
+        - uri:
+            prefix: /singleFileUpload
+      route:
+        - destination:
+            port:
+              number: 8080
+            host: big-file-download-server-svc.dso-api-gateway.svc.cluster.local
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
-  name: spring-boot-rest-server
-  namespace: tutorial
+  name: big-file-server-route-entry
 spec:
   hosts:
-    - spring-boot-rest-server-svc.tutorial2.svc.cluster.local
+    - big-file-download-server-dso-api-gateway.apps.d0-oscp.corp.dev.vtb
+  exportTo:
+    - "."
   ports:
-    - number: 8080
-      name: http
+    - number: 80
+      name: http-mac
       protocol: HTTP
-  location: MESH_INTERNAL
+  location: MESH_EXTERNAL
   resolution: DNS
---- Создаем ServiceEntry, тк в нашем Control plane установлен флаг "defaultConfigVisibilitySettings",
---- поэтому для обраащения к сервисам другого Namespace нужно явно добавлять внешний сервис в реестр
-

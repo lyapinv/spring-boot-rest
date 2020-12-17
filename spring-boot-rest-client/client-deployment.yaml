@@ -1,42 +1,50 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: spring-boot-rest-cfg
+  name: big-file-download-client-cfg
 data:
-  next.service.uri: http://spring-boot-rest-server-svc.tutorial2.svc.cluster.local:8080
+#  next.service.uri: https://big-file-download-server-svc.dso-api-gateway.svc.cluster.local:8080
+  next.service.uri: http://big-file-download-server-dso-api-gateway.apps.d0-oscp.corp.dev.vtb
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: spring-boot-rest-client
+    app: big-file-download-client
     version: v1
-  name: spring-boot-rest-client
+  name: big-file-download-client
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: spring-boot-rest-client
+      app: big-file-download-client
       version: v1
   template:
     metadata:
       labels:
-        app: spring-boot-rest-client
+        app: big-file-download-client
         group: tutorial-rest-app
         version: v1
       annotations:
         sidecar.istio.io/inject: "true"                 # service mesh sidecar
         sidecar.istio.io/rewriteAppHTTPProbers: "true"  # settings for probe when mTLS enabled
+        sidecar.maistra.io/proxyCPULimit: '500m'
+        sidecar.maistra.io/proxyMemoryLimit: '500M'
     spec:
       containers:
         - env:
             - name: NEXT_SERVICE_URI
               valueFrom:
                 configMapKeyRef:
-                  name: spring-boot-rest-cfg
+                  name: big-file-download-client-cfg
                   key: next.service.uri
-          name: spring-boot-rest-client
-          image: image-registry.openshift-image-registry.svc:5000/tutorial/spring-boot-rest-client:apV2
+            - name: FILE_UPLOAD_SERVER_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: big-file-download-client-cfg
+                  key: next.service.uri
+          name: big-file-download-client
+          image: di-oscp-nxs-ci.corp.dev.vtb/usbp-docker-lib/apigw/big-file-download-client:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -48,20 +56,20 @@ spec:
               memory: "128Mi"
             limits:
               cpu: "250m"
-              memory: "256Mi"
+              memory: "1000Mi"
           securityContext:
             privileged: false
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: spring-boot-rest-client-svc
+  name: big-file-download-client-svc
   labels:
-    app: spring-boot-rest-client
+    app: big-file-download-client
 spec:
   ports:
-    - name: http
+    - name: http-big-file-download-client-svc
       port: 8080
       targetPort: 8080
   selector:
-    app: spring-boot-rest-client
+    app: big-file-download-client

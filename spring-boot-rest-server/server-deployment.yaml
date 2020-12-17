@@ -1,44 +1,46 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: spring-boot-rest-cfg
+  name: big-file-download-cfg
 data:
-  next.service.uri: http://ext-service.tutorial2.svc.cluster.local:8083
+  next.service.uri: http://ext-service.dso-api-gateway.svc.cluster.local:8083
 #  next.service.uri: http://mac.local.host:8080
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: spring-boot-rest-server
+    app: big-file-download-server
     version: v1
-  name: spring-boot-rest-server
+  name: big-file-download-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: spring-boot-rest-server
+      app: big-file-download-server
       version: v1
   template:
     metadata:
       labels:
-        app: spring-boot-rest-server
+        app: big-file-download-server
         group: tutorial-rest-app
         version: v1
       annotations:
         sidecar.istio.io/inject: "true"                       # service mesh sidecar
         sidecar.istio.io/rewriteAppHTTPProbers: "true"        # settings for probe when mTLS enabled
 #        traffic.sidecar.istio.io/excludeOutboundPorts: '8080'
+        sidecar.maistra.io/proxyCPULimit: '500m'
+        sidecar.maistra.io/proxyMemoryLimit: '500M'
     spec:
       containers:
         - env:
             - name: NEXT_SERVICE_URI
               valueFrom:
                 configMapKeyRef:
-                  name: spring-boot-rest-cfg
+                  name: big-file-download-cfg
                   key: next.service.uri
-          name: spring-boot-rest-server
-          image: image-registry.openshift-image-registry.svc:5000/tutorial2/spring-boot-rest-server:apV2
+          name: big-file-download-server
+          image: di-oscp-nxs-ci.corp.dev.vtb/usbp-docker-lib/apigw/big-file-download-server:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -50,20 +52,20 @@ spec:
               memory: "128Mi"
             limits:
               cpu: "250m"
-              memory: "256Mi"
+              memory: "1000Mi"
           securityContext:
             privileged: false
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: spring-boot-rest-server-svc
+  name: big-file-download-server-svc
   labels:
-    app: spring-boot-rest-server
+    app: big-file-download-server
 spec:
   ports:
     - name: http
       port: 8080
       targetPort: 8080
   selector:
-    app: spring-boot-rest-server
+    app: big-file-download-server
